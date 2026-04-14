@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Lite: Eat. Upgrade. Survive.</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-container">
+        
+        <div class="main-panel">
+            
+            <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+            <div id="menuScreen" class="overlay active">
+                <div class="menu-box">
+                    <h1 class="title">SNAKE LITE</h1>
+                    <p class="subtitle">Eat. Upgrade. Survive.</p>
+                    <button id="startRunBtn" class="btn-green">START RUN</button>
+                </div>
+            </div>
+
+            <div id="gameoverScreen" class="overlay">
+                <div class="menu-box">
+                    <i data-lucide="skull" class="icon-skull"></i>
+                    <h1 class="title red-text">RUN ENDED</h1>
+                    <p id="deathMessage" class="subtitle">Succumbed in Stage 1.</p>
+                    <button id="restartBtn" class="btn-red">Draft New Run</button>
+                </div>
+            </div>
+
+            </div> <div class="stats-panel">
+            <h3>Run Status</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <span class="label">Stage</span>
+                    <span id="statStage" class="value">1</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Health</span>
+                    <span id="statHp" class="value">3 / 3</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Gold</span>
+                    <span id="statGold" class="value">0</span>
+                </div>
+                <div class="stat-card">
+                    <span class="label">Progress</span>
+                    <span id="statFood" class="value">0 / 7</span>
+                </div>
+            </div>
+            
+            <p class="controls-hint"><strong>Controls:</strong> WASD or Arrows.</p>
+            <button id="quitBtn" class="btn-slate">Abandon Run</button>
+        </div> </div> <script src="game.js"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        // Tell Lucide to find all the icons on the page and draw them
+        lucide.createIcons();
+    </script>
+</body>
+</html>
