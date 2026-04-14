@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Lite: Eat. Upgrade. Survive.</title>
+    <title>Snake Lite: Roguelite</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="game-container">
-        
         <div class="main-panel">
-            
             <canvas id="gameCanvas" width="400" height="400"></canvas>
 
             <div id="menuScreen" class="overlay active">
@@ -22,16 +19,36 @@
                 </div>
             </div>
 
-            <div id="gameoverScreen" class="overlay">
-                <div class="menu-box">
-                    <i data-lucide="skull" class="icon-skull"></i>
-                    <h1 class="title red-text">RUN ENDED</h1>
-                    <p id="deathMessage" class="subtitle">Succumbed in Stage 1.</p>
-                    <button id="restartBtn" class="btn-red">Draft New Run</button>
+            <div id="classSelectScreen" class="overlay">
+                <div class="menu-box large">
+                    <h2 class="title" style="font-size: 24px;">DRAFT YOUR SNAKE</h2>
+                    <div id="classOptions" class="class-grid"></div>
+                    <button id="backToMenuBtn" class="btn-slate" style="margin-top: 20px;">Back to Menu</button>
                 </div>
             </div>
 
-            </div> <div class="stats-panel">
+            <div id="shopScreen" class="overlay">
+                <div class="menu-box large">
+                    <h2 class="title" style="color: #fbbf24; font-size: 24px;">UPGRADE SHOP</h2>
+                    <div id="escalationWarning" class="warning-box" style="display:none;"></div>
+                    <p id="shopSubtitle" class="subtitle">Stage Cleared!</p>
+                    <div id="shopOptions" class="shop-grid"></div>
+                    <div style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button id="nextStageBtn" class="btn-green" style="flex: 1;">Enter Next Stage</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="gameoverScreen" class="overlay">
+                <div class="menu-box">
+                    <h1 class="title red-text">RUN ENDED</h1>
+                    <p id="deathMessage" class="subtitle">Succumbed in Stage X.</p>
+                    <button id="restartDraftBtn" class="btn-red">Draft New Run</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-panel">
             <h3>Run Status</h3>
             <div class="stats-grid">
                 <div class="stat-card">
@@ -40,26 +57,39 @@
                 </div>
                 <div class="stat-card">
                     <span class="label">Health</span>
-                    <span id="statHp" class="value">3 / 3</span>
+                    <span id="statHp" class="value text-red">3 / 3</span>
                 </div>
                 <div class="stat-card">
                     <span class="label">Gold</span>
-                    <span id="statGold" class="value">0</span>
+                    <span id="statGold" class="value text-gold">0</span>
                 </div>
                 <div class="stat-card">
                     <span class="label">Progress</span>
-                    <span id="statFood" class="value">0 / 7</span>
+                    <span id="statFood" class="value text-blue">0 / 0</span>
+                </div>
+            </div>
+            
+            <div id="modifierContainer" style="display: none; margin-top: 10px;">
+                <h3 style="color:#ef4444;">Active Modifiers</h3>
+                <div id="modifierList" style="display: flex; flex-direction: column; gap: 5px; margin-top: 10px;"></div>
+            </div>
+
+            <div style="margin-top: 10px; padding: 15px; background: #020617; border-radius: 12px; font-size: 14px;">
+                <h3 style="margin-bottom: 10px;">Current Build</h3>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="color: #94a3b8;">Class</span>
+                    <span id="buildClass" style="font-weight: bold; color: #4ade80;">Python</span>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: #94a3b8;">Speed Delay</span>
+                    <span id="buildSpeed" style="font-weight: bold;">120ms</span>
                 </div>
             </div>
             
             <p class="controls-hint"><strong>Controls:</strong> WASD or Arrows.</p>
             <button id="quitBtn" class="btn-slate">Abandon Run</button>
-        </div> </div> <script src="game.js"></script>
-    
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        // Tell Lucide to find all the icons on the page and draw them
-        lucide.createIcons();
-    </script>
+        </div>
+    </div>
+    <script src="game.js"></script>
 </body>
 </html>
