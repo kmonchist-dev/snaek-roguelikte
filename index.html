@@ -3,93 +3,664 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Lite: Roguelite</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Snake Lite</title>
+    <!-- We import Tailwind CSS directly so it looks identical on GitHub Pages -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- We import Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* Small custom animations to match React */
+        .animate-pulse-fast { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
 </head>
-<body>
-    <div class="game-container">
-        <div class="main-panel">
-            <canvas id="gameCanvas" width="400" height="400"></canvas>
+<body class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4 font-sans">
+    
+    <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- LEFT PANEL - GAME & MENUS -->
+        <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-8 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
+            
+            <canvas id="gameCanvas" width="400" height="400" class="bg-slate-950 rounded-xl shadow-inner w-full max-w-[450px] aspect-square transition-opacity duration-300"></canvas>
 
-            <div id="menuScreen" class="overlay active">
-                <div class="menu-box">
-                    <h1 class="title">SNAKE LITE</h1>
-                    <p class="subtitle">Eat. Upgrade. Survive.</p>
-                    <button id="startRunBtn" class="btn-green">START RUN</button>
+            <!-- Mobile Controls -->
+            <div id="mobileControls" class="grid grid-cols-3 gap-2 mt-8 lg:hidden w-48 mx-auto opacity-80 hidden">
+                <div></div>
+                <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:0, y:-1})"><i data-lucide="arrow-up"></i></button>
+                <div></div>
+                <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:-1, y:0})"><i data-lucide="arrow-left"></i></button>
+                <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:0, y:1})"><i data-lucide="arrow-down"></i></button>
+                <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:1, y:0})"><i data-lucide="arrow-right"></i></button>
+            </div>
+
+            <!-- SCREENS -->
+            <div id="screen-MENU" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
+                <div class="bg-slate-800/80 p-8 rounded-3xl border border-slate-700 text-center">
+                    <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">SNAKE LITE</h1>
+                    <p class="text-slate-400 mb-8 font-medium">Eat. Upgrade. Survive.</p>
+                    <button onclick="handleStartRun()" class="px-8 py-4 bg-green-500 hover:bg-green-400 text-slate-950 rounded-full font-black text-xl transition-transform hover:scale-105 shadow-[0_0_20px_rgba(34,197,94,0.4)]">START RUN</button>
                 </div>
             </div>
 
-            <div id="classSelectScreen" class="overlay">
-                <div class="menu-box large">
-                    <h2 class="title" style="font-size: 24px;">DRAFT YOUR SNAKE</h2>
-                    <div id="classOptions" class="class-grid"></div>
-                    <button id="backToMenuBtn" class="btn-slate" style="margin-top: 20px;">Back to Menu</button>
+            <div id="screen-CLASS_SELECT" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col p-6 overflow-y-auto items-center hidden">
+                <h2 class="text-3xl font-black text-white mb-6 mt-4">DRAFT YOUR SNAKE</h2>
+                <div id="classSelectGrid" class="flex flex-col gap-4 w-full max-w-md"></div>
+                <button onclick="quitToMenu()" class="mt-6 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold px-4 py-2"><i data-lucide="arrow-left" class="w-5 h-5"></i> Back to Menu</button>
+            </div>
+
+            <div id="screen-SHOP" class="absolute inset-0 bg-slate-900/95 z-10 flex flex-col p-6 md:p-10 overflow-y-auto hidden">
+                <h2 class="text-3xl font-black text-amber-400 flex items-center gap-3 mb-2"><i data-lucide="store" class="w-8 h-8"></i> UPGRADE SHOP</h2>
+                <div id="shopEscalation" class="mb-6 p-4 bg-red-950/50 border border-red-500/50 rounded-xl flex items-start gap-4 shadow-lg hidden">
+                    <i data-lucide="alert-triangle" class="text-red-500 shrink-0 mt-1 animate-pulse-fast w-7 h-7"></i>
+                    <div>
+                        <h3 class="font-bold text-red-400 text-lg uppercase tracking-wider mb-1">Warning: Escalation!</h3>
+                        <p id="shopEscalationText" class="text-red-200/80 text-sm"></p>
+                    </div>
+                </div>
+                <p id="shopSubtitle" class="text-slate-400 mb-8 border-b border-slate-800 pb-4"></p>
+                <div id="shopItemsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 mb-8"></div>
+                <div class="flex gap-4">
+                    <button onclick="startNextStage()" id="btnEnterStage" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-xl transition-all shadow-lg text-white"></button>
+                    <button onclick="quitToMenu()" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold transition-colors text-slate-400 hover:text-white flex items-center justify-center border border-slate-700"><i data-lucide="home" class="w-6 h-6"></i></button>
                 </div>
             </div>
 
-            <div id="shopScreen" class="overlay">
-                <div class="menu-box large">
-                    <h2 class="title" style="color: #fbbf24; font-size: 24px;">UPGRADE SHOP</h2>
-                    <div id="escalationWarning" class="warning-box" style="display:none;"></div>
-                    <p id="shopSubtitle" class="subtitle">Stage Cleared!</p>
-                    <div id="shopOptions" class="shop-grid"></div>
-                    <div style="display: flex; gap: 10px; margin-top: 20px;">
-                        <button id="nextStageBtn" class="btn-green" style="flex: 1;">Enter Next Stage</button>
+            <div id="screen-GAMEOVER" class="absolute inset-0 bg-slate-950/90 z-20 flex flex-col items-center justify-center p-6 text-center hidden">
+                <i data-lucide="skull" class="text-red-500 mb-6 animate-pulse-fast w-16 h-16"></i>
+                <h2 class="text-5xl font-black text-white mb-2">RUN ENDED</h2>
+                <p id="gameOverText" class="text-slate-400 mb-8 text-lg"></p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button onclick="handleStartRun()" class="px-8 py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors text-lg">Draft New Run</button>
+                    <button onclick="quitToMenu()" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-white transition-colors text-lg border border-slate-700">Main Menu</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL - STATS UI -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-6 overflow-y-auto max-h-[85vh]">
+            <div>
+                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2">Run Status</h3>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1">
+                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="trophy" class="text-yellow-500 w-4 h-4"></i> Stage</div>
+                        <div id="uiStage" class="font-black text-2xl text-white">1</div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1">
+                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="heart" class="text-red-500 w-4 h-4"></i> Health</div>
+                        <div class="font-black text-2xl text-white"><span id="uiHp">3</span> <span class="text-slate-600 text-lg">/ <span id="uiMaxHp">3</span></span></div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1">
+                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="coins" class="text-amber-400 w-4 h-4"></i> Gold</div>
+                        <div id="uiGold" class="font-black text-2xl text-white">0</div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 relative overflow-hidden">
+                        <div class="flex items-center gap-2 text-slate-400 text-sm z-10"><i data-lucide="zap" class="text-blue-400 w-4 h-4"></i> Progress</div>
+                        <div class="font-black text-2xl text-white z-10"><span id="uiFood">0</span> <span class="text-slate-600 text-lg">/ <span id="uiFoodReq">7</span></span></div>
+                        <div id="uiProgressBar" class="absolute bottom-0 left-0 h-1 bg-blue-500/50 transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
             </div>
-
-            <div id="gameoverScreen" class="overlay">
-                <div class="menu-box">
-                    <h1 class="title red-text">RUN ENDED</h1>
-                    <p id="deathMessage" class="subtitle">Succumbed in Stage X.</p>
-                    <button id="restartDraftBtn" class="btn-red">Draft New Run</button>
-                </div>
+            
+            <div id="uiModsContainer" class="hidden">
+                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2"><i data-lucide="alert-triangle" class="text-red-500 w-3.5 h-3.5"></i> Active Modifiers</h3>
+                <div id="uiModsList" class="flex flex-col gap-2"></div>
             </div>
-        </div>
 
-        <div class="stats-panel">
-            <h3>Run Status</h3>
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <span class="label">Stage</span>
-                    <span id="statStage" class="value">1</span>
-                </div>
-                <div class="stat-card">
-                    <span class="label">Health</span>
-                    <span id="statHp" class="value text-red">3 / 3</span>
-                </div>
-                <div class="stat-card">
-                    <span class="label">Gold</span>
-                    <span id="statGold" class="value text-gold">0</span>
-                </div>
-                <div class="stat-card">
-                    <span class="label">Progress</span>
-                    <span id="statFood" class="value text-blue">0 / 0</span>
-                </div>
+            <div>
+                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs">Current Build</h3>
+                <ul class="space-y-2 text-sm text-slate-300 bg-slate-950 border border-slate-800 p-4 rounded-xl">
+                    <li class="flex justify-between items-center"><span>Class</span> <span id="uiClass" class="font-bold text-green-400">Python</span></li>
+                    <li class="flex justify-between items-center"><span>Income Multiplier</span> <span id="uiMult" class="font-bold text-amber-400 bg-amber-400/10 px-2 py-1 rounded">x1</span></li>
+                    <li class="flex justify-between items-center"><span>Movement Delay</span> <span id="uiSpeed" class="font-bold text-white bg-slate-800 px-2 py-1 rounded">120ms</span></li>
+                    <li class="flex justify-between items-center"><span>Growth Rate</span> <span id="uiGrowth" class="font-bold px-2 py-1 rounded text-slate-300 bg-slate-800">+1</span></li>
+                </ul>
             </div>
             
-            <div id="modifierContainer" style="display: none; margin-top: 10px;">
-                <h3 style="color:#ef4444;">Active Modifiers</h3>
-                <div id="modifierList" style="display: flex; flex-direction: column; gap: 5px; margin-top: 10px;"></div>
-            </div>
-
-            <div style="margin-top: 10px; padding: 15px; background: #020617; border-radius: 12px; font-size: 14px;">
-                <h3 style="margin-bottom: 10px;">Current Build</h3>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                    <span style="color: #94a3b8;">Class</span>
-                    <span id="buildClass" style="font-weight: bold; color: #4ade80;">Python</span>
+            <div class="flex-1 flex flex-col justify-end gap-4">
+                <div class="text-sm text-slate-500 text-center bg-slate-950/50 p-4 rounded-xl border border-slate-800/50">
+                    <strong>Controls:</strong> WASD or Arrow Keys.
                 </div>
-                <div style="display: flex; justify-content: space-between;">
-                    <span style="color: #94a3b8;">Speed Delay</span>
-                    <span id="buildSpeed" style="font-weight: bold;">120ms</span>
-                </div>
+                <button id="btnAbandon" onclick="quitToMenu()" class="py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 border border-red-500/20 shrink-0 hidden">
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Abandon Run
+                </button>
             </div>
-            
-            <p class="controls-hint"><strong>Controls:</strong> WASD or Arrows.</p>
-            <button id="quitBtn" class="btn-slate">Abandon Run</button>
         </div>
     </div>
-    <script src="game.js"></script>
+
+    <script>
+        // --- 1. GAME CONSTANTS & DATA ---
+        const GRID_SIZE = 20;
+        const CELL_SIZE = 20;
+        const CANVAS_SIZE = GRID_SIZE * CELL_SIZE;
+
+        const INITIAL_SNAKE = [{ x: 10, y: 10 }, { x: 10, y: 11 }, { x: 10, y: 12 }];
+        const INITIAL_DIR = { x: 0, y: -1 };
+
+        const CLASSES = {
+            PYTHON: { id: 'PYTHON', name: 'Python', desc: 'A balanced starter. No special weaknesses.', baseHp: 3, baseSpeed: 120, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-green-400', icon: 'activity', iconColor: 'text-green-500' },
+            GHOST: { id: 'GHOST', name: 'Ghost', desc: 'Wraps through walls, but fragile and grows +2 per food.', baseHp: 1, baseSpeed: 120, ghost: true, goldMult: 1, growthPerFood: 2, colorClass: 'text-purple-400', icon: 'ghost', iconColor: 'text-purple-500' },
+            VIPER: { id: 'VIPER', name: 'Viper', desc: 'Moves fast and finds double gold. Squishy.', baseHp: 2, baseSpeed: 80, ghost: false, goldMult: 2, growthPerFood: 1, colorClass: 'text-blue-400', icon: 'wind', iconColor: 'text-blue-500' },
+            HYDRA: { id: 'HYDRA', name: 'Hydra', desc: '25% chance to spawn an extra piece of food on bite.', baseHp: 3, baseSpeed: 120, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-pink-400', icon: 'dna', iconColor: 'text-pink-500' },
+            MERCHANT: { id: 'MERCHANT', name: 'Merchant', desc: 'Shop items cost 20% less. Starts with 50 gold.', baseHp: 3, baseSpeed: 120, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-amber-500', icon: 'shopping-bag', iconColor: 'text-amber-500' },
+        };
+
+        const MODIFIER_TYPES = {
+            ROCKS: { id: 'ROCKS', name: 'Static Terrain', desc: 'Indestructible rocks spawn. (Max Lv.10)', icon: 'mountain', color: 'text-slate-400' },
+            SPOILED_APPLES: { id: 'SPOILED_APPLES', name: 'Spoiled Apples', desc: 'Poisonous food spawns. Avoid it!', icon: 'biohazard', color: 'text-lime-400' },
+            MOVING_FOOD: { id: 'MOVING_FOOD', name: 'Moving Food', desc: 'Normal food hops away periodically! (Max Lv.10)', icon: 'rabbit', color: 'text-pink-400' },
+            ICE_PATCHES: { id: 'ICE_PATCHES', name: 'Ice Patches', desc: 'Snake slides on ice! Cannot turn. (Max Lv.10)', icon: 'snowflake', color: 'text-cyan-300' }
+        };
+
+        // --- 2. STATE VARIABLES ---
+        let gameState = 'MENU';
+        let playerClass = CLASSES.PYTHON;
+        let stage = 1, hp = 3, maxHp = 3, gold = 0, foodEaten = 0, foodValue = 1, speed = 120;
+        let activeModifiers = {}, lastModifierEvent = null;
+
+        let snake = [...INITIAL_SNAKE];
+        let dir = {...INITIAL_DIR};
+        let lastProcessedDir = {...INITIAL_DIR};
+        let foods = [{ x: 5, y: 5 }];
+        let rocks = [], ice = [], spoiledFoods = [];
+        let growthQueue = 0;
+
+        let gameLoopRef = null;
+        let movingFoodIntervalRef = null;
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        const FOOD_TO_ADVANCE = () => 5 + stage * 2;
+        const getShopCost = (baseCost) => playerClass.id === 'MERCHANT' ? Math.round(baseCost * 0.8) : baseCost;
+
+        // --- 3. EXACT GENERATION LOGIC ---
+        function getEmptySpot(checkSnake = true, checkRocks = true, checkIce = true, checkFood = true, additionalAvoids = [], minDistFromHead = 0) {
+            let spot = { x: 0, y: 0 };
+            const head = snake[0];
+            
+            for (let pass = 0; pass < 2; pass++) {
+                let isOccupied = true, attempts = 0;
+                let currentMinDist = pass === 0 ? minDistFromHead : 0;
+                
+                while (isOccupied && attempts < 500) {
+                    spot = { x: Math.floor(Math.random() * GRID_SIZE), y: Math.floor(Math.random() * GRID_SIZE) };
+                    
+                    const onSnake = checkSnake ? snake.some(s => s.x === spot.x && s.y === spot.y) : false;
+                    const onRocks = checkRocks ? rocks.some(r => r.x === spot.x && r.y === spot.y) : false;
+                    const onIce = checkIce ? ice.some(i => i.x === spot.x && i.y === spot.y) : false;
+                    const onFood = checkFood ? foods.some(f => f.x === spot.x && f.y === spot.y) : false;
+                    const onAdditional = additionalAvoids.some(a => a.x === spot.x && a.y === spot.y);
+                    
+                    let tooCloseToHead = false;
+                    if (currentMinDist > 0 && head) {
+                        const dist = Math.abs(spot.x - head.x) + Math.abs(spot.y - head.y);
+                        if (dist <= currentMinDist) tooCloseToHead = true;
+                    }
+                    
+                    isOccupied = onSnake || onRocks || onIce || onFood || onAdditional || tooCloseToHead;
+                    if (!isOccupied) return spot;
+                    attempts++;
+                }
+            }
+            return spot;
+        }
+
+        function generateEnvironment() {
+            const iceLevel = activeModifiers.ICE_PATCHES || 0;
+            let newIce = [];
+            if (iceLevel > 0) {
+                const clampedIceLevel = Math.min(iceLevel, 10);
+                const numPatches = Math.floor(2 + (clampedIceLevel - 1) * (10 / 9));
+                
+                for (let p = 0; p < numPatches; p++) {
+                    let placed = false, attempts = 0;
+                    while (!placed && attempts < 100) {
+                        attempts++;
+                        const isHoriz = Math.random() > 0.5;
+                        const x = Math.floor(Math.random() * (GRID_SIZE - (isHoriz ? 3 : 0)));
+                        const y = Math.floor(Math.random() * (GRID_SIZE - (!isHoriz ? 3 : 0)));
+                        
+                        const spots = isHoriz ? 
+                            [{x, y}, {x: x+1, y}, {x: x+2, y}] : 
+                            [{x, y}, {x, y: y+1}, {x, y: y+2}];
+                            
+                        const head = snake[0];
+                        let isValid = true;
+                        for (const s of spots) {
+                            const onSnake = snake.some(seg => seg.x === s.x && seg.y === s.y);
+                            const onIce = newIce.some(iceTile => iceTile.x === s.x && iceTile.y === s.y);
+                            const distToHead = head ? Math.abs(s.x - head.x) + Math.abs(s.y - head.y) : 10;
+                            if (onSnake || onIce || distToHead < 4) { isValid = false; break; }
+                        }
+                        if (isValid) { newIce.push(...spots); placed = true; }
+                    }
+                }
+            }
+            ice = newIce;
+
+            const rockLevel = activeModifiers.ROCKS || 0;
+            let newRocks = [];
+            if (rockLevel > 0) {
+                const clampedRockLevel = Math.min(rockLevel, 10);
+                const numRocks = clampedRockLevel * 3; 
+                for(let i = 0; i < numRocks; i++) {
+                    newRocks.push(getEmptySpot(true, false, false, false, [...newRocks, ...newIce], 4)); 
+                }
+            }
+            rocks = newRocks;
+        }
+
+        function resetSnakePosition() {
+            snake = [...INITIAL_SNAKE];
+            dir = {...INITIAL_DIR}; lastProcessedDir = {...INITIAL_DIR};
+            growthQueue = 0;
+            generateEnvironment();
+            
+            foods = [getEmptySpot(true, true, true, true, [], 4)];
+            
+            const spoiledLevel = activeModifiers.SPOILED_APPLES || 0;
+            let newSpoiled = [];
+            for(let i = 0; i < spoiledLevel; i++) {
+                newSpoiled.push(getEmptySpot(true, true, true, true, newSpoiled, 5)); 
+            }
+            spoiledFoods = newSpoiled;
+        }
+
+        // --- 4. EXACT PHYSICS & TIMERS LOGIC ---
+        function moveFood() {
+            if (gameState !== 'PLAYING') return;
+            foods = foods.map(currentFood => {
+                const adjacent = [
+                    { x: currentFood.x + 1, y: currentFood.y },
+                    { x: currentFood.x - 1, y: currentFood.y },
+                    { x: currentFood.x, y: currentFood.y + 1 },
+                    { x: currentFood.x, y: currentFood.y - 1 }
+                ];
+
+                const validSpots = adjacent.filter(spot => {
+                    if (spot.x < 0 || spot.x >= GRID_SIZE || spot.y < 0 || spot.y >= GRID_SIZE) return false;
+                    if (rocks.some(r => r.x === spot.x && r.y === spot.y)) return false;
+                    if (spoiledFoods.some(s => s.x === spot.x && s.y === spot.y)) return false;
+                    if (snake.some(s => s.x === spot.x && s.y === spot.y)) return false;
+                    if (foods.some(f => f !== currentFood && f.x === spot.x && f.y === spot.y)) return false;
+                    return true;
+                });
+
+                if (validSpots.length > 0) return validSpots[Math.floor(Math.random() * validSpots.length)];
+                return currentFood;
+            });
+            drawCanvas();
+        }
+
+        function startIntervals() {
+            clearInterval(gameLoopRef);
+            gameLoopRef = setInterval(moveSnake, speed);
+
+            clearInterval(movingFoodIntervalRef);
+            const level = activeModifiers.MOVING_FOOD || 0;
+            if (level > 0) {
+                const clampedLevel = Math.min(level, 10);
+                const intervalMs = 3000 - ((clampedLevel - 1) * (2000 / 9));
+                movingFoodIntervalRef = setInterval(moveFood, intervalMs);
+            }
+        }
+
+        function moveSnake() {
+            if (gameState !== 'PLAYING') return;
+
+            const head = snake[0];
+            const onIce = ice.some(iceTile => iceTile.x === head.x && iceTile.y === head.y);
+            
+            // Ice mechanic
+            if (onIce) dir = lastProcessedDir;
+
+            const currentDir = dir;
+            lastProcessedDir = currentDir;
+            
+            const newHead = { x: head.x + currentDir.x, y: head.y + currentDir.y };
+            let hitWall = newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE;
+            
+            // Ghost wrap mechanic
+            if (hitWall && playerClass.ghost) {
+                newHead.x = (newHead.x + GRID_SIZE) % GRID_SIZE;
+                newHead.y = (newHead.y + GRID_SIZE) % GRID_SIZE;
+                hitWall = false; 
+            }
+
+            let hitRock = rocks.some(rock => newHead.x === rock.x && newHead.y === rock.y);
+            // Ghost pass-through mechanic
+            if (hitRock && playerClass.ghost) hitRock = false; 
+
+            let hitSelf = snake.some(segment => newHead.x === segment.x && newHead.y === segment.y);
+
+            if (hitWall || hitSelf || hitRock) {
+                handleDamage(); return; 
+            }
+
+            const newSnake = [newHead, ...snake];
+
+            const hitSpoiled = spoiledFoods.some(sf => newHead.x === sf.x && newHead.y === sf.y);
+            if (hitSpoiled) {
+                handleDamage(); return;
+            }
+
+            const eatenFoodIndex = foods.findIndex(f => newHead.x === f.x && newHead.y === f.y);
+            
+            if (eatenFoodIndex !== -1) {
+                foods.splice(eatenFoodIndex, 1);
+                gold += (foodValue * playerClass.goldMult);
+                foodEaten++;
+                
+                if (foodEaten >= FOOD_TO_ADVANCE()) {
+                    triggerWinStage(); return;
+                }
+                
+                if (foods.length === 0) {
+                    foods.push(getEmptySpot(true, true, true, true, foods, 4));
+                }
+                
+                // Hydra mechanic
+                if (playerClass.id === 'HYDRA' && Math.random() < 0.25) {
+                    foods.push(getEmptySpot(true, true, true, true, foods, 4));
+                }
+                
+                // Regenerate spoiled food locations perfectly
+                const spoiledLevel = activeModifiers.SPOILED_APPLES || 0;
+                let newSpoiled = [];
+                for(let i = 0; i < spoiledLevel; i++) {
+                    newSpoiled.push(getEmptySpot(true, true, true, true, [...foods, ...newSpoiled], 5)); 
+                }
+                spoiledFoods = newSpoiled;
+
+                growthQueue += playerClass.growthPerFood;
+            }
+
+            // Smooth Growth Queue Mechanics
+            if (growthQueue > 0) {
+                growthQueue -= 1; 
+            } else {
+                newSnake.pop(); 
+            }
+
+            snake = newSnake;
+            drawCanvas();
+            updateUIPanels();
+        }
+
+        // --- 5. RENDER LOGIC ---
+        function drawCanvas() {
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            ctx.strokeStyle = '#1e293b'; 
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= GRID_SIZE; i++) {
+                ctx.beginPath(); ctx.moveTo(i * CELL_SIZE, 0); ctx.lineTo(i * CELL_SIZE, CANVAS_SIZE); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(0, i * CELL_SIZE); ctx.lineTo(CANVAS_SIZE, i * CELL_SIZE); ctx.stroke();
+            }
+
+            ctx.fillStyle = 'rgba(165, 243, 252, 0.2)'; 
+            ice.forEach(i => ctx.fillRect(i.x * CELL_SIZE, i.y * CELL_SIZE, CELL_SIZE, CELL_SIZE));
+            ctx.strokeStyle = 'rgba(165, 243, 252, 0.4)'; ctx.lineWidth = 2;
+            ice.forEach(i => {
+                ctx.beginPath();
+                ctx.moveTo(i.x * CELL_SIZE + 4, i.y * CELL_SIZE + CELL_SIZE - 4);
+                ctx.lineTo(i.x * CELL_SIZE + CELL_SIZE - 4, i.y * CELL_SIZE + 4);
+                ctx.stroke();
+            });
+
+            ctx.fillStyle = '#475569'; 
+            rocks.forEach(r => {
+                ctx.beginPath(); ctx.roundRect(r.x * CELL_SIZE + 1, r.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
+            });
+
+            ctx.fillStyle = '#84cc16';
+            spoiledFoods.forEach(sp => {
+                ctx.beginPath(); ctx.arc(sp.x * CELL_SIZE + CELL_SIZE/2, sp.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#14532d'; 
+                ctx.fillRect(sp.x * CELL_SIZE + CELL_SIZE/2 - 1, sp.y * CELL_SIZE + 2, 2, 4);
+                ctx.fillStyle = '#84cc16'; // Reset for next loop
+            });
+
+            ctx.fillStyle = '#ef4444'; 
+            foods.forEach(f => {
+                ctx.beginPath(); ctx.arc(f.x * CELL_SIZE + CELL_SIZE/2, f.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
+            });
+
+            snake.forEach((segment, index) => {
+                const headColor = playerClass.ghost ? '#a855f7' : '#16a34a';
+                const bodyColor = playerClass.ghost ? '#c084fc' : '#22c55e';
+                ctx.fillStyle = index === 0 ? headColor : bodyColor; 
+                ctx.beginPath(); ctx.roundRect(segment.x * CELL_SIZE + 1, segment.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
+            });
+        }
+
+        // --- 6. STATE TRANSITIONS ---
+        function handleDamage() {
+            hp -= 1;
+            if (hp <= 0) {
+                setGameState('GAMEOVER');
+                document.getElementById('gameOverText').innerText = `You succumbed during Stage ${stage}.`;
+            } else {
+                resetSnakePosition();
+                drawCanvas();
+            }
+            updateUIPanels();
+        }
+
+        function triggerWinStage() {
+            setGameState('SHOP');
+            stage += 1;
+            if (stage % 2 === 0) {
+                const maxLevels = { MOVING_FOOD: 10, ROCKS: 10, ICE_PATCHES: 10, SPOILED_APPLES: Infinity };
+                const availableTypes = Object.keys(MODIFIER_TYPES).filter(key => (activeModifiers[key] || 0) < maxLevels[key]);
+                if (availableTypes.length > 0) {
+                    const chosenId = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+                    activeModifiers[chosenId] = (activeModifiers[chosenId] || 0) + 1;
+                    lastModifierEvent = { id: chosenId, level: activeModifiers[chosenId] };
+                }
+            } else {
+                lastModifierEvent = null;
+            }
+            foodEaten = 0;
+            renderShop();
+            updateUIPanels();
+        }
+
+        function handleStartRun() {
+            const allClassIds = Object.keys(CLASSES);
+            const shuffled = [...allClassIds].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 3).map(id => CLASSES[id]);
+            
+            document.getElementById('classSelectGrid').innerHTML = selected.map(cls => {
+                let extras = '';
+                if(cls.ghost) extras += '<span class="text-xs text-purple-400 mt-2 font-semibold block">+ Wraps through walls</span>';
+                if(cls.goldMult > 1) extras += `<span class="text-xs text-amber-400 mt-2 font-semibold block">+ x${cls.goldMult} Gold Drops</span>`;
+                if(cls.id === 'MERCHANT') extras += '<span class="text-xs text-amber-500 mt-2 font-semibold block">+ 20% Shop Discount</span>';
+                if(cls.growthPerFood > 1) extras += `<span class="text-xs text-red-400 mt-1 font-semibold block">- Grows +${cls.growthPerFood} per food</span>`;
+                
+                return `
+                <button onclick="startGameWithClass('${cls.id}')" class="flex flex-col text-left p-4 rounded-xl border border-slate-700 bg-slate-800 hover:border-green-500 hover:bg-slate-800/80 transition-all group">
+                    <div class="flex justify-between items-center mb-1 w-full">
+                        <span class="font-bold text-xl text-white group-hover:text-green-400 flex items-center gap-2">
+                            <i data-lucide="${cls.icon}" class="${cls.iconColor} w-5 h-5"></i> ${cls.name}
+                        </span>
+                        <div class="flex gap-2 text-xs font-bold">
+                            <span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded text-red-400"><i data-lucide="heart" class="w-3 h-3"></i> ${cls.baseHp}</span>
+                            <span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded text-slate-300"><i data-lucide="zap" class="w-3 h-3"></i> ${cls.baseSpeed}ms</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-400">${cls.desc}</p>
+                    ${extras}
+                </button>`;
+            }).join('');
+            
+            setGameState('CLASS_SELECT');
+        }
+
+        window.startGameWithClass = function(clsId) {
+            playerClass = CLASSES[clsId];
+            hp = maxHp = playerClass.baseHp;
+            gold = playerClass.id === 'MERCHANT' ? 50 : 0;
+            foodValue = 1; speed = playerClass.baseSpeed; stage = 1; foodEaten = 0;
+            activeModifiers = {}; lastModifierEvent = null;
+            
+            rocks = []; ice = []; spoiledFoods = [];
+            snake = [...INITIAL_SNAKE]; dir = {...INITIAL_DIR}; lastProcessedDir = {...INITIAL_DIR}; growthQueue = 0;
+            foods = [{x: 5, y: 5}];
+            
+            setGameState('PLAYING');
+            startNextStage();
+        }
+
+        function startNextStage() {
+            resetSnakePosition();
+            setGameState('PLAYING');
+            startIntervals();
+        }
+
+        function quitToMenu() {
+            clearInterval(gameLoopRef);
+            clearInterval(movingFoodIntervalRef);
+            setGameState('MENU');
+        }
+
+        // --- 7. DOM & UI UPDATES ---
+        function setGameState(newState) {
+            gameState = newState;
+            document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`screen-${newState}`).classList.remove('hidden');
+            
+            const cvs = document.getElementById('gameCanvas');
+            if (newState !== 'PLAYING') {
+                cvs.classList.add('opacity-20', 'blur-sm');
+                document.getElementById('mobileControls').classList.add('hidden');
+                document.getElementById('btnAbandon').classList.add('hidden');
+            } else {
+                cvs.classList.remove('opacity-20', 'blur-sm');
+                document.getElementById('mobileControls').classList.remove('hidden');
+                document.getElementById('btnAbandon').classList.remove('hidden');
+            }
+            lucide.createIcons();
+            drawCanvas();
+            updateUIPanels();
+        }
+
+        function updateUIPanels() {
+            document.getElementById('uiStage').innerText = stage;
+            document.getElementById('uiHp').innerText = hp;
+            document.getElementById('uiMaxHp').innerText = maxHp;
+            document.getElementById('uiGold').innerText = gold;
+            document.getElementById('uiFood').innerText = foodEaten;
+            document.getElementById('uiFoodReq').innerText = FOOD_TO_ADVANCE();
+            document.getElementById('uiProgressBar').style.width = `${(foodEaten / FOOD_TO_ADVANCE()) * 100}%`;
+
+            const modsContainer = document.getElementById('uiModsContainer');
+            if (Object.keys(activeModifiers).length > 0) {
+                modsContainer.classList.remove('hidden');
+                document.getElementById('uiModsList').innerHTML = Object.entries(activeModifiers).map(([id, level]) => {
+                    const m = MODIFIER_TYPES[id];
+                    return `
+                    <div class="bg-slate-950 border border-red-900/30 p-3 rounded-xl flex items-center gap-3">
+                        <div class="relative">
+                            <i data-lucide="${m.icon}" class="${m.color} w-6 h-6"></i>
+                            <span class="absolute -bottom-2 -right-2 bg-slate-800 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full border border-slate-600">Lv.${level}</span>
+                        </div>
+                        <span class="font-bold text-slate-200 text-sm">${m.name}</span>
+                    </div>`;
+                }).join('');
+            } else {
+                modsContainer.classList.add('hidden');
+            }
+
+            document.getElementById('uiClass').innerText = playerClass.name;
+            document.getElementById('uiClass').className = `font-bold ${playerClass.colorClass}`;
+            document.getElementById('uiMult').innerText = `x${foodValue * playerClass.goldMult}`;
+            document.getElementById('uiSpeed').innerText = `${speed}ms`;
+            
+            const uiGrowth = document.getElementById('uiGrowth');
+            uiGrowth.innerText = `+${playerClass.growthPerFood}`;
+            if (playerClass.growthPerFood > 1) {
+                uiGrowth.className = 'font-bold px-2 py-1 rounded text-red-400 bg-red-400/10';
+            } else {
+                uiGrowth.className = 'font-bold px-2 py-1 rounded text-slate-300 bg-slate-800';
+            }
+            lucide.createIcons();
+        }
+
+        function renderShop() {
+            const escBox = document.getElementById('shopEscalation');
+            if (stage % 2 === 0 && lastModifierEvent) {
+                escBox.classList.remove('hidden');
+                document.getElementById('shopEscalationText').innerHTML = `${MODIFIER_TYPES[lastModifierEvent.id].name} reached <span class="font-bold text-white">Level ${lastModifierEvent.level}</span>.<br/>${MODIFIER_TYPES[lastModifierEvent.id].desc}`;
+            } else {
+                escBox.classList.add('hidden');
+            }
+            document.getElementById('shopSubtitle').innerText = `Stage ${stage - 1} Cleared! Prepare for the next challenge.`;
+            document.getElementById('btnEnterStage').innerText = `Enter Stage ${stage}`;
+
+            const items = [
+                { icon: 'heart', title: 'Health Potion', desc: 'Restore 1 HP instantly', baseCost: 10, cond: hp < maxHp, act: () => hp = Math.min(hp + 1, maxHp) },
+                { icon: 'shield', title: 'Heart Container', desc: 'Max HP +1 & Restore 1 HP', baseCost: 50, cond: true, act: () => { maxHp++; hp++; } },
+                { icon: 'coins', title: 'Golden Apples', desc: 'Food yields more gold', baseCost: 30 * foodValue, cond: true, act: () => foodValue++ },
+                { icon: 'zap', title: 'Time Dilation', desc: 'Slightly slows snake speed', baseCost: 60, cond: speed < 180, act: () => speed = Math.min(speed + 15, 180) }
+            ];
+
+            document.getElementById('shopItemsGrid').innerHTML = items.map((item, idx) => {
+                const cost = getShopCost(item.baseCost);
+                const canBuy = gold >= cost && item.cond;
+                const borderClass = canBuy ? 'border-amber-500/50 bg-slate-800 hover:border-amber-400' : 'border-slate-700 bg-slate-800/50 opacity-60';
+                const btnClass = canBuy ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30' : 'bg-slate-700 text-slate-500 cursor-not-allowed';
+                const merchTag = playerClass.id === 'MERCHANT' ? '<span class="text-xs text-green-400 ml-1">(-20%)</span>' : '';
+                
+                return `
+                <div class="p-4 rounded-xl border transition-all flex flex-col gap-2 ${borderClass}">
+                    <div class="flex items-center gap-2 font-bold text-lg text-white"><i data-lucide="${item.icon}" class="w-5 h-5"></i> ${item.title}</div>
+                    <p class="text-sm text-slate-400 flex-1">${item.desc}</p>
+                    <button onclick="buyShopItem(${idx}, ${cost})" ${!canBuy ? 'disabled' : ''} class="py-2 rounded-lg font-bold mt-2 flex items-center justify-center gap-2 transition-colors ${btnClass}">
+                        <i data-lucide="coins" class="w-4 h-4"></i> ${cost} ${merchTag}
+                    </button>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        window.buyShopItem = function(idx, cost) {
+            gold -= cost;
+            const actions = [
+                () => hp = Math.min(hp + 1, maxHp),
+                () => { maxHp++; hp++; },
+                () => foodValue++,
+                () => speed = Math.min(speed + 15, 180)
+            ];
+            actions[idx]();
+            updateUIPanels();
+            renderShop();
+        }
+
+        // --- 8. INPUT LISTENERS ---
+        window.addEventListener('keydown', e => {
+            if (gameState !== 'PLAYING') return;
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd'].includes(e.key)) e.preventDefault();
+            
+            const currentDir = lastProcessedDir;
+            switch(e.key) {
+                case 'ArrowUp': case 'w': if (currentDir.y === 0) dir = {x: 0, y: -1}; break;
+                case 'ArrowDown': case 's': if (currentDir.y === 0) dir = {x: 0, y: 1}; break;
+                case 'ArrowLeft': case 'a': if (currentDir.x === 0) dir = {x: -1, y: 0}; break;
+                case 'ArrowRight': case 'd': if (currentDir.x === 0) dir = {x: 1, y: 0}; break;
+            }
+        });
+
+        window.handleDpad = function(newDir) {
+            const currentDir = lastProcessedDir;
+            if (newDir.y !== 0 && currentDir.y === 0) dir = newDir;
+            if (newDir.x !== 0 && currentDir.x === 0) dir = newDir;
+        }
+
+        // Init
+        setGameState('MENU');
+        lucide.createIcons();
+    </script>
 </body>
 </html>
