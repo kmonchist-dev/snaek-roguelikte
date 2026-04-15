@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Lite</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Custom animations */
         .animate-pulse-fast { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
-        /* Custom scrollbar for leaderboard */
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #0f172a; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
@@ -20,10 +20,12 @@
     
     <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         
+        <!-- LEFT PANEL - GAME & MENUS -->
         <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-8 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
             
             <canvas id="gameCanvas" width="400" height="400" class="bg-slate-950 rounded-xl shadow-inner w-full max-w-[450px] aspect-square transition-opacity duration-300"></canvas>
 
+            <!-- Mobile Controls -->
             <div id="mobileControls" class="grid grid-cols-3 gap-2 mt-8 lg:hidden w-48 mx-auto opacity-80 hidden">
                 <div></div>
                 <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:0, y:-1})"><i data-lucide="arrow-up"></i></button>
@@ -33,6 +35,7 @@
                 <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:1, y:0})"><i data-lucide="arrow-right"></i></button>
             </div>
 
+            <!-- NAME REGISTRATION OVERLAY -->
             <div id="screen-REGISTER" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 p-6 text-center hidden backdrop-blur-md">
                 <i data-lucide="user-circle" class="text-green-500 mb-6 w-16 h-16"></i>
                 <h2 class="text-4xl font-black text-white mb-2">IDENTIFY YOURSELF</h2>
@@ -41,8 +44,13 @@
                 <button onclick="savePlayerName()" class="px-8 py-4 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-colors w-full max-w-xs shadow-lg">Save Profile</button>
             </div>
 
+            <!-- MAIN MENU SCREEN -->
             <div id="screen-MENU" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
-                <div class="bg-slate-800/90 p-8 rounded-3xl border border-slate-700 text-center w-full max-w-md shadow-2xl">
+                <button onclick="openSettings()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors p-2 z-20">
+                    <i data-lucide="settings" class="w-6 h-6"></i>
+                </button>
+                
+                <div class="bg-slate-800/90 p-8 rounded-3xl border border-slate-700 text-center w-full max-w-md shadow-2xl relative">
                     <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">SNAKE LITE</h1>
                     <p class="text-slate-400 mb-6 font-medium">Welcome back, <span id="menuPlayerName" class="text-emerald-400 font-bold"></span></p>
                     
@@ -51,6 +59,35 @@
                 </div>
             </div>
 
+            <!-- SETTINGS / DEV TOOLS OVERLAY -->
+            <div id="screen-SETTINGS" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-6 text-center hidden">
+                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 w-full max-w-sm relative shadow-2xl">
+                    <button onclick="closeSettings()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
+                        <i data-lucide="x" class="w-6 h-6"></i>
+                    </button>
+                    <h2 class="text-3xl font-black text-white mb-6 flex items-center justify-center gap-2">
+                        <i data-lucide="settings" class="text-slate-400 w-7 h-7"></i> DEV TOOLS
+                    </h2>
+                    
+                    <div id="devAuthBox" class="flex flex-col gap-4">
+                        <input type="password" id="devPasswordInput" placeholder="Enter Password" class="bg-slate-800 border border-slate-600 text-white font-bold text-center px-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500">
+                        <button onclick="checkDevPassword()" class="py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-colors">Authenticate</button>
+                    </div>
+
+                    <div id="devToolsBox" class="flex flex-col gap-6 text-left hidden">
+                        <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-4 rounded-xl border border-slate-700 hover:border-emerald-500 transition-colors">
+                            <input type="checkbox" id="checkInvulnerable" onchange="toggleInvulnerable(this.checked)" class="w-5 h-5 accent-emerald-500">
+                            God Mode (Invulnerable)
+                        </label>
+                        <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-4 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors">
+                            <input type="checkbox" id="checkMaxMods" onchange="toggleForceMaxModifiers(this.checked)" class="w-5 h-5 accent-purple-500">
+                            Force Max Modifiers
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEADERBOARD OVERLAY -->
             <div id="screen-LEADERBOARD" class="absolute inset-0 z-20 flex flex-col items-center bg-slate-900/95 p-6 overflow-hidden hidden">
                 <h2 class="text-3xl font-black text-amber-400 mb-4 flex items-center gap-2"><i data-lucide="trophy"></i> HALL OF FAME</h2>
                 
@@ -72,12 +109,14 @@
                 <button onclick="toggleLeaderboard()" class="mt-6 text-slate-400 hover:text-white transition-colors font-bold flex items-center gap-2"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Menu</button>
             </div>
 
+            <!-- CLASS SELECT SCREEN -->
             <div id="screen-CLASS_SELECT" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col p-6 overflow-y-auto items-center hidden">
                 <h2 class="text-3xl font-black text-white mb-6 mt-4">DRAFT YOUR SNAKE</h2>
                 <div id="classSelectGrid" class="flex flex-col gap-4 w-full max-w-md"></div>
                 <button onclick="quitToMenu()" class="mt-6 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold px-4 py-2"><i data-lucide="arrow-left" class="w-5 h-5"></i> Back to Menu</button>
             </div>
 
+            <!-- SHOP SCREEN -->
             <div id="screen-SHOP" class="absolute inset-0 bg-slate-900/95 z-10 flex flex-col p-6 md:p-10 overflow-y-auto hidden">
                 <h2 class="text-3xl font-black text-amber-400 flex items-center gap-3 mb-2"><i data-lucide="store" class="w-8 h-8"></i> UPGRADE SHOP</h2>
                 <div id="shopEscalation" class="mb-6 p-4 bg-red-950/50 border border-red-500/50 rounded-xl flex items-start gap-4 shadow-lg hidden">
@@ -95,6 +134,7 @@
                 </div>
             </div>
 
+            <!-- PAUSE/START OVERLAY -->
             <div id="pauseOverlay" class="absolute inset-0 z-10 flex flex-col items-center justify-end pb-12 text-center hidden pointer-events-none">
                 <div id="pauseOverlayBox" class="bg-slate-900/90 border border-emerald-500/50 p-5 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.2)] backdrop-blur-sm pointer-events-auto mb-4 transition-colors">
                     <h2 id="pauseTitle" class="text-2xl font-black text-emerald-400 mb-1">STAGE 1</h2>
@@ -103,6 +143,7 @@
                 </div>
             </div>
 
+            <!-- GAMEOVER SCREEN -->
             <div id="screen-GAMEOVER" class="absolute inset-0 bg-slate-950/90 z-20 flex flex-col items-center justify-center p-6 text-center hidden">
                 <i data-lucide="skull" class="text-red-500 mb-6 animate-pulse-fast w-16 h-16"></i>
                 <h2 class="text-5xl font-black text-white mb-2">RUN ENDED</h2>
@@ -115,6 +156,7 @@
             </div>
         </div>
 
+        <!-- RIGHT PANEL - STATS UI -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-6 overflow-y-auto max-h-[85vh]">
             <div>
                 <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2">Run Status</h3>
@@ -165,28 +207,28 @@
         </div>
     </div>
 
+    <!-- FIREBASE MODULES (IMPORT) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, push, query, orderByChild, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        // ==========================================
-        // PASTE YOUR FIREBASE CONFIG OBJECT HERE
-        // ==========================================
+        // ======================================================================================
+        // PASTE YOUR FIREBASE CONFIG OBJECT HERE (REPLACE THIS BLOCK WITH YOUR KEYS)
+        // ======================================================================================
         const firebaseConfig = {
-            apiKey: "AIzaSyC76d3JvCvvjmKBmgsgJGWOb5ia5Uuk5s8",
-            authDomain: "snaek-roguelikte.firebaseapp.com",
-            projectId: "snaek-roguelikte",
-            storageBucket: "snaek-roguelikte.firebasestorage.app",
-            messagingSenderId: "443020102096",
-            appId: "1:443020102096:web:5644058ea9361b850bd1d5",
-            databaseURL: "https://snaek-roguelikte-default-rtdb.europe-west1.firebasedatabase.app/" // Important!
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID",
+            databaseURL: "https://YOUR_PROJECT_ID-default-rtdb.firebaseio.com" // VERY IMPORTANT!
         };
         // ======================================================================================
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
-        // Upload Score Function
         window.dbPushScore = async (name, stage) => {
             try {
                 await push(ref(db, 'scores'), {
@@ -202,10 +244,8 @@
             }
         };
 
-        // Fetch & De-duplicate Leaderboard Function
         window.dbFetchScores = async () => {
             const scoresRef = ref(db, 'scores');
-            // Fetch 100 recent scores to ensure we have enough after filtering duplicates
             const q = query(scoresRef, orderByChild('stage'), limitToLast(100));
             
             try {
@@ -217,10 +257,7 @@
                         scoresArray.push(childSnapshot.val());
                     });
                     
-                    // 1. Sort from highest stage to lowest
                     scoresArray.sort((a, b) => b.stage - a.stage);
-
-                    // 2. Filter out duplicate names, keeping only their single highest score
                     const uniqueScores = [];
                     const seenNames = new Set();
                     
@@ -242,6 +279,42 @@
     </script>
 
     <script>
+        // --- 0. DEV TOOLS & SETTINGS ---
+        let isInvulnerable = false;
+        let forceMaxModifiers = false;
+        let isSettingsUnlocked = false;
+
+        window.openSettings = function() {
+            document.getElementById('screen-SETTINGS').classList.remove('hidden');
+        }
+
+        window.closeSettings = function() {
+            document.getElementById('screen-SETTINGS').classList.add('hidden');
+            document.getElementById('devPasswordInput').value = '';
+        }
+
+        window.checkDevPassword = function() {
+            if (document.getElementById('devPasswordInput').value === 'Snaek') {
+                isSettingsUnlocked = true;
+                document.getElementById('devAuthBox').classList.add('hidden');
+                document.getElementById('devToolsBox').classList.remove('hidden');
+            } else {
+                alert('Access Denied: Incorrect Password');
+            }
+        }
+
+        window.toggleInvulnerable = function(checked) {
+            isInvulnerable = checked;
+        }
+
+        window.toggleForceMaxModifiers = function(checked) {
+            forceMaxModifiers = checked;
+            if (checked && gameState === 'PLAYING') {
+                activeModifiers = { ROCKS: 10, SPOILED_APPLES: 10, MOVING_FOOD: 10, ICE_PATCHES: 10 };
+                updateUIPanels();
+            }
+        }
+
         // --- 1. LOCAL SAVE & PROFILE LOGIC ---
         let currentProfileName = localStorage.getItem('snakeLite_Name');
 
@@ -296,13 +369,11 @@
             try {
                 let scores = await window.dbFetchScores();
                 
-                // Filter for weekly if needed
                 if (tab === 'weekly') {
                     const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
                     scores = scores.filter(s => s.timestamp > oneWeekAgo);
                 }
                 
-                // Limit to top 10
                 scores = scores.slice(0, 10);
 
                 if (scores.length === 0) {
@@ -337,7 +408,7 @@
 
         const CLASSES = {
             PYTHON: { id: 'PYTHON', name: 'Python', desc: 'A balanced starter. No special weaknesses.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-green-400', icon: 'activity', iconColor: 'text-green-500' },
-            GHOST: { id: 'GHOST', name: 'Ghost', desc: 'Wraps through walls, but fragile and grows +2 per food.', baseHp: 1, baseSpeed: 100, ghost: true, goldMult: 1, growthPerFood: 2, colorClass: 'text-purple-400', icon: 'ghost', iconColor: 'text-purple-500' },
+            GHOST: { id: 'GHOST', name: 'Ghost', desc: 'Passes through rocks, but fragile and grows +2 per food.', baseHp: 1, baseSpeed: 100, ghost: true, goldMult: 1, growthPerFood: 2, colorClass: 'text-purple-400', icon: 'ghost', iconColor: 'text-purple-500' },
             VIPER: { id: 'VIPER', name: 'Viper', desc: 'Moves fast and finds double gold. Squishy.', baseHp: 2, baseSpeed: 75, ghost: false, goldMult: 2, growthPerFood: 1, colorClass: 'text-blue-400', icon: 'wind', iconColor: 'text-blue-500' },
             HYDRA: { id: 'HYDRA', name: 'Hydra', desc: '25% chance to spawn an extra piece of food on bite.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-pink-400', icon: 'dna', iconColor: 'text-pink-500' },
             MERCHANT: { id: 'MERCHANT', name: 'Merchant', desc: 'Shop items cost 20% less. Starts with 50 gold.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-amber-500', icon: 'shopping-bag', iconColor: 'text-amber-500' },
@@ -369,14 +440,26 @@
         let growthQueue = 0;
 
         let gameLoopRef = null;
-        let movingFoodIntervalRef = null;
+        let foodTickIntervalRef = null;
         let lastDamageTime = 0;
         let isWaitingForInput = false;
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        const FOOD_TO_ADVANCE = () => Math.min(10, 5 + Math.floor(stage / 2));
+        // Dynamic stage scaling!
+        const FOOD_TO_ADVANCE = () => {
+            let req = 5;
+            for (let i = 2; i <= stage; i++) {
+                if (i % 2 === 0) {
+                    if (i <= 10) req += 1;
+                    else if (i <= 20) req += 2;
+                    else req += 3;
+                }
+            }
+            return req;
+        };
+        
         const getShopCost = (baseCost) => playerClass.id === 'MERCHANT' ? Math.round(baseCost * 0.8) : baseCost;
 
         // --- 5. RETRO SOUND ENGINE (WEB AUDIO API) ---
@@ -419,6 +502,24 @@
                 setTimeout(() => playTone(659.25, 'sine', 0.2), 100); 
             }
         };
+
+        // --- INDEPENDENT MOVEMENT TIMERS ---
+        function getFoodMoveDelay() {
+            const level = activeModifiers.MOVING_FOOD || 0;
+            if (level === 0) return Infinity;
+            
+            const clamped = Math.min(level, 10);
+            const minTime = 2500 - ((clamped - 1) * (1500 / 9));
+            const maxTime = 3500 - ((clamped - 1) * (2300 / 9));
+            
+            return Math.floor(Math.random() * (maxTime - minTime + 1) + minTime);
+        }
+
+        function resetFoodTimers() {
+            const now = Date.now();
+            foods.forEach(f => f.nextMoveTime = now + getFoodMoveDelay());
+            spoiledFoods.forEach(s => s.nextMoveTime = now + getFoodMoveDelay());
+        }
 
         // --- 6. GENERATION LOGIC ---
         function getEmptySpot(checkSnake = true, checkRocks = true, checkIce = true, checkFood = true, additionalAvoids = [], minDistFromHead = 0) {
@@ -547,7 +648,8 @@
             bigSpoiledFood = null;
             
             for(let i = 0; i < spoiledLevel; i++) {
-                newSpoiled.push(getEmptySpot(true, true, true, true, [...foods, ...newSpoiled], 5)); 
+                const spot = getEmptySpot(true, true, true, true, [...foods, ...newSpoiled], 5);
+                newSpoiled.push({ ...spot, nextMoveTime: Date.now() + getFoodMoveDelay() }); 
             }
             spoiledFoods = newSpoiled;
             
@@ -562,46 +664,83 @@
             growthQueue = 0;
             generateEnvironment();
             
-            foods = [getEmptySpot(true, true, true, true, [], 4)];
+            const initialSpot = getEmptySpot(true, true, true, true, [], 4);
+            foods = [{ ...initialSpot, nextMoveTime: Date.now() + getFoodMoveDelay() }];
+            
             spawnSpoiledApples();
         }
 
         // --- 7. PHYSICS & TIMERS LOGIC ---
-        function moveFood() {
-            if (gameState !== 'PLAYING') return;
-            foods = foods.map(currentFood => {
-                const adjacent = [
-                    { x: currentFood.x + 1, y: currentFood.y },
-                    { x: currentFood.x - 1, y: currentFood.y },
-                    { x: currentFood.x, y: currentFood.y + 1 },
-                    { x: currentFood.x, y: currentFood.y - 1 }
-                ];
-
-                const validSpots = adjacent.filter(spot => {
-                    if (spot.x < 0 || spot.x >= GRID_SIZE || spot.y < 0 || spot.y >= GRID_SIZE) return false;
-                    if (rocks.some(r => r.x === spot.x && r.y === spot.y)) return false;
+        function tryMoveEntity(entity, isSpoiled) {
+            const isValidSpot = (spot) => {
+                if (spot.x < 0 || spot.x >= GRID_SIZE || spot.y < 0 || spot.y >= GRID_SIZE) return false;
+                if (rocks.some(r => r.x === spot.x && r.y === spot.y)) return false;
+                if (snake.some(s => s.x === spot.x && s.y === spot.y)) return false;
+                
+                if (bigSpoiledFood) {
+                    if (spot.x >= bigSpoiledFood.x && spot.x <= bigSpoiledFood.x + 1 &&
+                        spot.y >= bigSpoiledFood.y && spot.y <= bigSpoiledFood.y + 1) return false;
+                }
+                
+                if (!isSpoiled) {
+                    if (foods.some(f => f !== entity && f.x === spot.x && f.y === spot.y)) return false;
                     if (spoiledFoods.some(s => s.x === spot.x && s.y === spot.y)) return false;
-                    if (snake.some(s => s.x === spot.x && s.y === spot.y)) return false;
-                    if (foods.some(f => f !== currentFood && f.x === spot.x && f.y === spot.y)) return false;
-                    return true;
-                });
+                } else {
+                    if (foods.some(f => f.x === spot.x && f.y === spot.y)) return false;
+                    if (spoiledFoods.some(s => s !== entity && s.x === spot.x && s.y === spot.y)) return false;
+                }
+                return true;
+            };
 
-                if (validSpots.length > 0) return validSpots[Math.floor(Math.random() * validSpots.length)];
-                return currentFood;
+            const adjacent = [
+                { x: entity.x + 1, y: entity.y },
+                { x: entity.x - 1, y: entity.y },
+                { x: entity.x, y: entity.y + 1 },
+                { x: entity.x, y: entity.y - 1 }
+            ];
+
+            const validSpots = adjacent.filter(spot => isValidSpot(spot));
+
+            if (validSpots.length > 0) {
+                const chosen = validSpots[Math.floor(Math.random() * validSpots.length)];
+                return { ...entity, x: chosen.x, y: chosen.y };
+            }
+            return entity;
+        }
+
+        function tickFoodMoves() {
+            if (gameState !== 'PLAYING') return;
+            const now = Date.now();
+            let moved = false;
+
+            foods = foods.map(f => {
+                if (now >= f.nextMoveTime) {
+                    const newSpot = tryMoveEntity(f, false);
+                    if (newSpot !== f) moved = true;
+                    return { ...newSpot, nextMoveTime: now + getFoodMoveDelay() };
+                }
+                return f;
             });
-            drawCanvas();
+
+            spoiledFoods = spoiledFoods.map(s => {
+                if (now >= s.nextMoveTime) {
+                    const newSpot = tryMoveEntity(s, true);
+                    if (newSpot !== s) moved = true;
+                    return { ...newSpot, nextMoveTime: now + getFoodMoveDelay() };
+                }
+                return s;
+            });
+
+            if (moved) drawCanvas();
         }
 
         function startIntervals() {
             clearInterval(gameLoopRef);
             gameLoopRef = setInterval(moveSnake, speed);
 
-            clearInterval(movingFoodIntervalRef);
-            const level = activeModifiers.MOVING_FOOD || 0;
-            if (level > 0) {
-                const clampedLevel = Math.min(level, 10);
-                const intervalMs = 3000 - ((clampedLevel - 1) * (2000 / 9));
-                movingFoodIntervalRef = setInterval(moveFood, intervalMs);
+            clearInterval(foodTickIntervalRef);
+            if (activeModifiers.MOVING_FOOD > 0) {
+                foodTickIntervalRef = setInterval(tickFoodMoves, 50);
             }
         }
 
@@ -620,21 +759,24 @@
             const newHead = { x: head.x + currentDir.x, y: head.y + currentDir.y };
             let hitWall = newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE;
             
-            // Ghost wrap mechanic
-            if (hitWall && playerClass.ghost) {
+            // UNIVERSAL WALL WRAP
+            if (hitWall) {
                 newHead.x = (newHead.x + GRID_SIZE) % GRID_SIZE;
                 newHead.y = (newHead.y + GRID_SIZE) % GRID_SIZE;
                 hitWall = false; 
             }
 
             let hitRockIndex = rocks.findIndex(rock => newHead.x === rock.x && newHead.y === rock.y);
-            // Ghost pass-through mechanic
-            if (hitRockIndex !== -1 && playerClass.ghost) hitRockIndex = -1;
+            // Ghost / Dev Tool pass-through mechanic
+            if (hitRockIndex !== -1 && (playerClass.ghost || isInvulnerable)) hitRockIndex = -1;
 
             let hitSelf = snake.some(segment => newHead.x === segment.x && newHead.y === segment.y);
+            if (hitSelf && isInvulnerable) hitSelf = false;
 
-            if (hitWall || hitSelf) {
+            if (hitWall || hitSelf) { // hitWall is always false now, but left for structure
+                if (!isInvulnerable) hp -= 1;
                 sfx.damage();
+                triggerDamageVisuals();
                 handleDamage(); return; 
             }
 
@@ -642,23 +784,25 @@
             if (bigSpoiledFood) {
                 if (newHead.x >= bigSpoiledFood.x && newHead.x <= bigSpoiledFood.x + 1 &&
                     newHead.y >= bigSpoiledFood.y && newHead.y <= bigSpoiledFood.y + 1) {
-                    hp = 0;
-                    sfx.damage();
-                    triggerDamageVisuals();
-                    handleDamage(); // Re-use handleDamage logic which calls Game Over
-                    return;
+                    if (!isInvulnerable) {
+                        hp = 0;
+                        sfx.damage();
+                        triggerDamageVisuals();
+                        handleDamage(); 
+                        return;
+                    }
                 }
             }
 
             // Rock eating logic
             if (hitRockIndex !== -1) {
                 rocks.splice(hitRockIndex, 1);
-                hp -= 1;
+                if (!isInvulnerable) hp -= 1;
                 growthQueue += 5;
                 sfx.rock();
                 triggerDamageVisuals();
                 if (hp <= 0) {
-                    handleDamage(); // routes to game over
+                    handleDamage(); 
                     return;
                 }
                 updateUIPanels();
@@ -669,7 +813,7 @@
             const hitSpoiledIndex = spoiledFoods.findIndex(sf => newHead.x === sf.x && newHead.y === sf.y);
             if (hitSpoiledIndex !== -1) {
                 spoiledFoods.splice(hitSpoiledIndex, 1);
-                hp -= 1;
+                if (!isInvulnerable) hp -= 1;
                 growthQueue += playerClass.growthPerFood;
                 sfx.damage();
                 triggerDamageVisuals();
@@ -693,21 +837,20 @@
                 }
                 
                 if (foods.length === 0) {
-                    foods.push(getEmptySpot(true, true, true, true, foods, 4));
+                    const spot = getEmptySpot(true, true, true, true, foods, 4);
+                    foods.push({ ...spot, nextMoveTime: Date.now() + getFoodMoveDelay() });
                 }
                 
                 // Hydra mechanic
                 if (playerClass.id === 'HYDRA' && Math.random() < 0.25) {
-                    foods.push(getEmptySpot(true, true, true, true, foods, 4));
+                    const spot = getEmptySpot(true, true, true, true, foods, 4);
+                    foods.push({ ...spot, nextMoveTime: Date.now() + getFoodMoveDelay() });
                 }
                 
-                // Regenerate spoiled food locations perfectly
                 spawnSpoiledApples();
-
                 growthQueue += playerClass.growthPerFood;
             }
 
-            // Smooth Growth Queue Mechanics
             if (growthQueue > 0) {
                 growthQueue -= 1; 
             } else {
@@ -751,7 +894,7 @@
                 ctx.beginPath(); ctx.arc(sp.x * CELL_SIZE + CELL_SIZE/2, sp.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
                 ctx.fillStyle = '#14532d'; 
                 ctx.fillRect(sp.x * CELL_SIZE + CELL_SIZE/2 - 1, sp.y * CELL_SIZE + 2, 2, 4);
-                ctx.fillStyle = '#84cc16'; // Reset for next loop
+                ctx.fillStyle = '#84cc16'; 
             });
 
             if (bigSpoiledFood) {
@@ -773,7 +916,6 @@
                 ctx.beginPath(); ctx.arc(f.x * CELL_SIZE + CELL_SIZE/2, f.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
             });
 
-            // Blink logic for taking damage
             const timeSinceDamage = Date.now() - lastDamageTime;
             const isBlinking = !isWaitingForInput && timeSinceDamage < 800 && Math.floor(timeSinceDamage / 100) % 2 === 0;
 
@@ -820,7 +962,7 @@
 
         function showPauseOverlay(type) {
             clearInterval(gameLoopRef);
-            clearInterval(movingFoodIntervalRef);
+            clearInterval(foodTickIntervalRef);
             isWaitingForInput = true;
             
             const box = document.getElementById('pauseOverlayBox');
@@ -847,12 +989,16 @@
             setGameState('SHOP');
             stage += 1;
             
-            const maxLevels = { MOVING_FOOD: 10, ROCKS: 10, ICE_PATCHES: 10, SPOILED_APPLES: 10 };
-            const availableTypes = Object.keys(MODIFIER_TYPES).filter(key => (activeModifiers[key] || 0) < maxLevels[key]);
-            if (availableTypes.length > 0) {
-                const chosenId = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-                activeModifiers[chosenId] = (activeModifiers[chosenId] || 0) + 1;
-                lastModifierEvent = { id: chosenId, level: activeModifiers[chosenId] };
+            if (stage % 2 === 0) {
+                const maxLevels = { MOVING_FOOD: 10, ROCKS: 10, ICE_PATCHES: 10, SPOILED_APPLES: 10 };
+                const availableTypes = Object.keys(MODIFIER_TYPES).filter(key => (activeModifiers[key] || 0) < maxLevels[key]);
+                if (availableTypes.length > 0) {
+                    const chosenId = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+                    activeModifiers[chosenId] = (activeModifiers[chosenId] || 0) + 1;
+                    lastModifierEvent = { id: chosenId, level: activeModifiers[chosenId] };
+                } else {
+                    lastModifierEvent = null;
+                }
             } else {
                 lastModifierEvent = null;
             }
@@ -870,7 +1016,7 @@
             
             document.getElementById('classSelectGrid').innerHTML = selected.map(cls => {
                 let extras = '';
-                if(cls.ghost) extras += '<span class="text-xs text-purple-400 mt-2 font-semibold block">+ Wraps through walls</span>';
+                if(cls.ghost) extras += '<span class="text-xs text-purple-400 mt-2 font-semibold block">+ Passes through rocks</span>';
                 if(cls.goldMult > 1) extras += `<span class="text-xs text-amber-400 mt-2 font-semibold block">+ x${cls.goldMult} Gold Drops</span>`;
                 if(cls.id === 'MERCHANT') extras += '<span class="text-xs text-amber-500 mt-2 font-semibold block">+ 20% Shop Discount</span>';
                 if(cls.growthPerFood > 1) extras += `<span class="text-xs text-red-400 mt-1 font-semibold block">- Grows +${cls.growthPerFood} per food</span>`;
@@ -899,7 +1045,10 @@
             hp = maxHp = playerClass.baseHp;
             gold = playerClass.id === 'MERCHANT' ? 50 : 0;
             foodValue = 1; speed = playerClass.baseSpeed; stage = 1; foodEaten = 0;
-            activeModifiers = {}; lastModifierEvent = null;
+            
+            // Check cheat toggle!
+            activeModifiers = forceMaxModifiers ? { ROCKS: 10, SPOILED_APPLES: 10, MOVING_FOOD: 10, ICE_PATCHES: 10 } : {};
+            lastModifierEvent = null;
             
             potionPurchases = 0; heartPurchases = 0; applePurchases = 0;
             
@@ -913,12 +1062,13 @@
 
         function startNextStage() {
             resetSnakePosition();
+            setGameState('PLAYING');
             showPauseOverlay('START');
         }
 
         function quitToMenu() {
             clearInterval(gameLoopRef);
-            clearInterval(movingFoodIntervalRef);
+            clearInterval(foodTickIntervalRef);
             setGameState('MENU');
         }
 
@@ -960,10 +1110,10 @@
             document.getElementById('uiProgressBar').style.width = `${(foodEaten / FOOD_TO_ADVANCE()) * 100}%`;
 
             const cvs = document.getElementById('gameCanvas');
+            // Give all classes a dashed border to imply open walls
+            cvs.style.border = '4px dashed #475569';
             if (playerClass.ghost) {
-                cvs.style.border = '4px dashed rgba(168, 85, 247, 0.8)';
-            } else {
-                cvs.style.border = '4px solid #475569';
+                cvs.style.borderColor = 'rgba(168, 85, 247, 0.8)';
             }
 
             const modsContainer = document.getElementById('uiModsContainer');
@@ -1074,6 +1224,9 @@
                     document.getElementById('pauseOverlay').classList.add('hidden');
                     dir = parsedDir;
                     lastProcessedDir = parsedDir;
+                    
+                    resetFoodTimers();
+                    
                     startIntervals();
                     moveSnake(); 
                 }
@@ -1100,6 +1253,9 @@
                 document.getElementById('pauseOverlay').classList.add('hidden');
                 dir = newDir;
                 lastProcessedDir = newDir;
+                
+                resetFoodTimers();
+                
                 startIntervals();
                 moveSnake();
                 return;
