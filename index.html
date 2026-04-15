@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snake Lite</title>
-    <!-- We import Tailwind CSS directly so it looks identical on GitHub Pages -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- We import Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Small custom animations */
+        /* Custom animations */
         .animate-pulse-fast { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
         /* Custom scrollbar for leaderboard */
@@ -22,21 +20,10 @@
     
     <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- LEFT PANEL - GAME & MENUS -->
         <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-8 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
             
             <canvas id="gameCanvas" width="400" height="400" class="bg-slate-950 rounded-xl shadow-inner w-full max-w-[450px] aspect-square transition-opacity duration-300"></canvas>
 
-            <!-- NAME REGISTRATION OVERLAY -->
-            <div id="screen-REGISTER" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 p-6 text-center hidden backdrop-blur-md">
-                <i data-lucide="user-circle" class="text-green-500 mb-6 w-16 h-16"></i>
-                <h2 class="text-4xl font-black text-white mb-2">IDENTIFY YOURSELF</h2>
-                <p class="text-slate-400 mb-8">Enter a codename for the global leaderboards.</p>
-                <input type="text" id="playerNameInput" maxlength="12" placeholder="Enter Name (Max 12 chars)" class="bg-slate-800 border border-slate-600 text-white font-bold text-center px-6 py-4 rounded-xl mb-4 w-full max-w-xs focus:outline-none focus:border-green-500 uppercase">
-                <button onclick="savePlayerName()" class="px-8 py-4 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-colors w-full max-w-xs shadow-lg">Save Profile</button>
-            </div>
-
-            <!-- Mobile Controls -->
             <div id="mobileControls" class="grid grid-cols-3 gap-2 mt-8 lg:hidden w-48 mx-auto opacity-80 hidden">
                 <div></div>
                 <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:0, y:-1})"><i data-lucide="arrow-up"></i></button>
@@ -46,17 +33,24 @@
                 <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:1, y:0})"><i data-lucide="arrow-right"></i></button>
             </div>
 
-            <!-- SCREENS -->
+            <div id="screen-REGISTER" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 p-6 text-center hidden backdrop-blur-md">
+                <i data-lucide="user-circle" class="text-green-500 mb-6 w-16 h-16"></i>
+                <h2 class="text-4xl font-black text-white mb-2">IDENTIFY YOURSELF</h2>
+                <p class="text-slate-400 mb-8">Enter a codename for the global leaderboards.</p>
+                <input type="text" id="playerNameInput" maxlength="12" placeholder="Enter Name (Max 12 chars)" class="bg-slate-800 border border-slate-600 text-white font-bold text-center px-6 py-4 rounded-xl mb-4 w-full max-w-xs focus:outline-none focus:border-green-500 uppercase">
+                <button onclick="savePlayerName()" class="px-8 py-4 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-colors w-full max-w-xs shadow-lg">Save Profile</button>
+            </div>
+
             <div id="screen-MENU" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
                 <div class="bg-slate-800/90 p-8 rounded-3xl border border-slate-700 text-center w-full max-w-md shadow-2xl">
                     <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">SNAKE LITE</h1>
                     <p class="text-slate-400 mb-6 font-medium">Welcome back, <span id="menuPlayerName" class="text-emerald-400 font-bold"></span></p>
+                    
                     <button onclick="handleStartRun()" class="w-full py-4 bg-green-500 hover:bg-green-400 text-slate-950 rounded-xl font-black text-xl transition-transform hover:scale-[1.02] shadow-[0_0_20px_rgba(34,197,94,0.4)] mb-4">START RUN</button>
                     <button onclick="toggleLeaderboard()" class="w-full py-4 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"><i data-lucide="globe" class="w-5 h-5"></i> Global Leaderboard</button>
                 </div>
             </div>
 
-            <!-- LEADERBOARD OVERLAY -->
             <div id="screen-LEADERBOARD" class="absolute inset-0 z-20 flex flex-col items-center bg-slate-900/95 p-6 overflow-hidden hidden">
                 <h2 class="text-3xl font-black text-amber-400 mb-4 flex items-center gap-2"><i data-lucide="trophy"></i> HALL OF FAME</h2>
                 
@@ -101,7 +95,6 @@
                 </div>
             </div>
 
-            <!-- DYNAMIC PAUSE OVERLAY (Used for Stage Start and Respawning) -->
             <div id="pauseOverlay" class="absolute inset-0 z-10 flex flex-col items-center justify-end pb-12 text-center hidden pointer-events-none">
                 <div id="pauseOverlayBox" class="bg-slate-900/90 border border-emerald-500/50 p-5 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.2)] backdrop-blur-sm pointer-events-auto mb-4 transition-colors">
                     <h2 id="pauseTitle" class="text-2xl font-black text-emerald-400 mb-1">STAGE 1</h2>
@@ -122,7 +115,6 @@
             </div>
         </div>
 
-        <!-- RIGHT PANEL - STATS UI -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-6 overflow-y-auto max-h-[85vh]">
             <div>
                 <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2">Run Status</h3>
@@ -173,7 +165,6 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULES (IMPORT) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, push, query, orderByChild, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
@@ -190,10 +181,12 @@
             appId: "1:443020102096:web:5644058ea9361b850bd1d5",
             databaseURL: "https://snaek-roguelikte-default-rtdb.europe-west1.firebasedatabase.app/" // Important!
         };
+        // ======================================================================================
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
+        // Upload Score Function
         window.dbPushScore = async (name, stage) => {
             try {
                 await push(ref(db, 'scores'), {
@@ -209,21 +202,57 @@
             }
         };
 
+        // Fetch & De-duplicate Leaderboard Function
         window.dbFetchScores = async () => {
             const scoresRef = ref(db, 'scores');
-            const q = query(scoresRef, orderByChild('stage'), limitToLast(50));
-            const snapshot = await get(q);
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                return Object.values(data).sort((a, b) => b.stage - a.stage);
+            // Fetch 100 recent scores to ensure we have enough after filtering duplicates
+            const q = query(scoresRef, orderByChild('stage'), limitToLast(100));
+            
+            try {
+                const snapshot = await get(q);
+                let scoresArray = [];
+                
+                if (snapshot.exists()) {
+                    snapshot.forEach((childSnapshot) => {
+                        scoresArray.push(childSnapshot.val());
+                    });
+                    
+                    // 1. Sort from highest stage to lowest
+                    scoresArray.sort((a, b) => b.stage - a.stage);
+
+                    // 2. Filter out duplicate names, keeping only their single highest score
+                    const uniqueScores = [];
+                    const seenNames = new Set();
+                    
+                    for (const score of scoresArray) {
+                        if (!seenNames.has(score.name)) {
+                            uniqueScores.push(score);
+                            seenNames.add(score.name);
+                        }
+                    }
+                    
+                    return uniqueScores;
+                }
+                return [];
+            } catch (error) {
+                console.error("Firebase Fetch Error:", error);
+                throw error;
             }
-            return [];
         };
     </script>
 
     <script>
         // --- 1. LOCAL SAVE & PROFILE LOGIC ---
         let currentProfileName = localStorage.getItem('snakeLite_Name');
+
+        function initProfile() {
+            if (!currentProfileName) {
+                setGameState('REGISTER');
+            } else {
+                document.getElementById('menuPlayerName').innerText = currentProfileName;
+                setGameState('MENU');
+            }
+        }
 
         window.savePlayerName = function() {
             const input = document.getElementById('playerNameInput').value.trim();
@@ -237,7 +266,7 @@
             }
         }
 
-        // --- LEADERBOARD LOGIC ---
+        // --- 2. LEADERBOARD UI LOGIC ---
         let currentLeaderboardTab = 'lifetime';
         
         window.toggleLeaderboard = function() {
@@ -266,10 +295,14 @@
 
             try {
                 let scores = await window.dbFetchScores();
+                
+                // Filter for weekly if needed
                 if (tab === 'weekly') {
                     const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
                     scores = scores.filter(s => s.timestamp > oneWeekAgo);
                 }
+                
+                // Limit to top 10
                 scores = scores.slice(0, 10);
 
                 if (scores.length === 0) {
@@ -294,7 +327,7 @@
             }
         }
 
-        // --- GAME CONSTANTS & DATA ---
+        // --- 3. GAME CONSTANTS & DATA ---
         const GRID_SIZE = 20;
         const CELL_SIZE = 20;
         const CANVAS_SIZE = GRID_SIZE * CELL_SIZE;
@@ -317,13 +350,12 @@
             ICE_PATCHES: { id: 'ICE_PATCHES', name: 'Ice Patches', desc: 'Snake slides on ice! Cannot turn. (Max Lv.10)', icon: 'snowflake', color: 'text-cyan-300' }
         };
 
-        // --- 2. STATE VARIABLES ---
+        // --- 4. STATE VARIABLES ---
         let gameState = 'MENU';
         let playerClass = CLASSES.PYTHON;
         let stage = 1, hp = 3, maxHp = 3, gold = 0, foodEaten = 0, foodValue = 1, speed = 100;
         let activeModifiers = {}, lastModifierEvent = null;
         
-        // Shop Purchase Counters for Dynamic Pricing
         let potionPurchases = 0;
         let heartPurchases = 0;
         let applePurchases = 0;
@@ -347,11 +379,10 @@
         const FOOD_TO_ADVANCE = () => Math.min(10, 5 + Math.floor(stage / 2));
         const getShopCost = (baseCost) => playerClass.id === 'MERCHANT' ? Math.round(baseCost * 0.8) : baseCost;
 
-        // --- RETRO SOUND ENGINE (WEB AUDIO API) ---
+        // --- 5. RETRO SOUND ENGINE (WEB AUDIO API) ---
         let audioCtx = null;
         
         function initAudio() {
-            // Browsers require user interaction before audio can play
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             }
@@ -380,16 +411,16 @@
         }
 
         const sfx = {
-            eat: () => playTone(440, 'sine', 0.1, 0.1, 880), // Cheerful upward slide
-            damage: () => playTone(250, 'sawtooth', 0.3, 0.2, 100), // Harsh downward boop
-            rock: () => playTone(100, 'square', 0.15, 0.2, 50), // Low 8-bit crunch
-            shop: () => { // Ka-ching arpeggio
+            eat: () => playTone(440, 'sine', 0.1, 0.1, 880),
+            damage: () => playTone(250, 'sawtooth', 0.3, 0.2, 100),
+            rock: () => playTone(100, 'square', 0.15, 0.2, 50),
+            shop: () => { 
                 playTone(523.25, 'sine', 0.1); 
                 setTimeout(() => playTone(659.25, 'sine', 0.2), 100); 
             }
         };
 
-        // --- 3. EXACT GENERATION LOGIC ---
+        // --- 6. GENERATION LOGIC ---
         function getEmptySpot(checkSnake = true, checkRocks = true, checkIce = true, checkFood = true, additionalAvoids = [], minDistFromHead = 0) {
             let spot = { x: 0, y: 0 };
             const head = snake[0];
@@ -535,7 +566,7 @@
             spawnSpoiledApples();
         }
 
-        // --- 4. EXACT PHYSICS & TIMERS LOGIC ---
+        // --- 7. PHYSICS & TIMERS LOGIC ---
         function moveFood() {
             if (gameState !== 'PLAYING') return;
             foods = foods.map(currentFood => {
@@ -614,9 +645,7 @@
                     hp = 0;
                     sfx.damage();
                     triggerDamageVisuals();
-                    setGameState('GAMEOVER');
-                    document.getElementById('gameOverText').innerText = `You were annihilated by the Giant Poison Apple on Stage ${stage}.`;
-                    updateUIPanels();
+                    handleDamage(); // Re-use handleDamage logic which calls Game Over
                     return;
                 }
             }
@@ -629,9 +658,7 @@
                 sfx.rock();
                 triggerDamageVisuals();
                 if (hp <= 0) {
-                    setGameState('GAMEOVER');
-                    document.getElementById('gameOverText').innerText = `You succumbed during Stage ${stage}.`;
-                    updateUIPanels();
+                    handleDamage(); // routes to game over
                     return;
                 }
                 updateUIPanels();
@@ -647,9 +674,7 @@
                 sfx.damage();
                 triggerDamageVisuals();
                 if (hp <= 0) {
-                    setGameState('GAMEOVER');
-                    document.getElementById('gameOverText').innerText = `You succumbed during Stage ${stage}.`;
-                    updateUIPanels();
+                    handleDamage(); 
                     return;
                 }
                 updateUIPanels();
@@ -694,7 +719,7 @@
             updateUIPanels();
         }
 
-        // --- 5. RENDER LOGIC ---
+        // --- 8. RENDER LOGIC ---
         function drawCanvas() {
             ctx.fillStyle = '#0f172a';
             ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -750,7 +775,6 @@
 
             // Blink logic for taking damage
             const timeSinceDamage = Date.now() - lastDamageTime;
-            // Prevent blinking during the waiting state so the snake remains visible
             const isBlinking = !isWaitingForInput && timeSinceDamage < 800 && Math.floor(timeSinceDamage / 100) % 2 === 0;
 
             if (!isBlinking) {
@@ -763,18 +787,15 @@
             }
         }
 
-        // --- 6. STATE TRANSITIONS ---
+        // --- 9. STATE TRANSITIONS ---
         function triggerDamageVisuals() {
             lastDamageTime = Date.now();
             const cvs = document.getElementById('gameCanvas');
-            // Flash a red inner shadow on the canvas
             cvs.style.boxShadow = 'inset 0 0 30px 10px rgba(239, 68, 68, 0.8)';
             setTimeout(() => cvs.style.boxShadow = '', 300);
         }
 
         function handleDamage() {
-            hp -= 1;
-            triggerDamageVisuals();
             if (hp <= 0) {
                 setGameState('GAMEOVER');
                 document.getElementById('gameOverText').innerText = `You succumbed during Stage ${stage}.`;
@@ -819,14 +840,13 @@
             }
             
             document.getElementById('pauseOverlay').classList.remove('hidden');
-            drawCanvas(); // Ensure canvas is drawn so player can see the board
+            drawCanvas(); 
         }
 
         function triggerWinStage() {
             setGameState('SHOP');
             stage += 1;
             
-            // MODIFIERS ESCALATE EVERY STAGE NOW
             const maxLevels = { MOVING_FOOD: 10, ROCKS: 10, ICE_PATCHES: 10, SPOILED_APPLES: 10 };
             const availableTypes = Object.keys(MODIFIER_TYPES).filter(key => (activeModifiers[key] || 0) < maxLevels[key]);
             if (availableTypes.length > 0) {
@@ -881,19 +901,18 @@
             foodValue = 1; speed = playerClass.baseSpeed; stage = 1; foodEaten = 0;
             activeModifiers = {}; lastModifierEvent = null;
             
-            // Reset Purchase Cost Scaling
             potionPurchases = 0; heartPurchases = 0; applePurchases = 0;
             
             rocks = []; ice = []; spoiledFoods = []; bigSpoiledFood = null;
             snake = [...INITIAL_SNAKE]; dir = {...INITIAL_DIR}; lastProcessedDir = {...INITIAL_DIR}; growthQueue = 0;
             foods = [{x: 5, y: 5}];
             
+            setGameState('PLAYING');
             startNextStage();
         }
 
         function startNextStage() {
             resetSnakePosition();
-            setGameState('PLAYING');
             showPauseOverlay('START');
         }
 
@@ -903,7 +922,7 @@
             setGameState('MENU');
         }
 
-        // --- 7. DOM & UI UPDATES ---
+        // --- 10. DOM & UI UPDATES ---
         function setGameState(newState) {
             gameState = newState;
             document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
@@ -913,7 +932,6 @@
                 targetScreen.classList.remove('hidden');
             }
             
-            // Cleanup any active pause overlays when state changes
             document.getElementById('pauseOverlay').classList.add('hidden');
             isWaitingForInput = false;
             
@@ -941,7 +959,6 @@
             document.getElementById('uiFoodReq').innerText = FOOD_TO_ADVANCE();
             document.getElementById('uiProgressBar').style.width = `${(foodEaten / FOOD_TO_ADVANCE()) * 100}%`;
 
-            // Update Arena Outer Wall dynamically using CSS border so it sits outside the grid
             const cvs = document.getElementById('gameCanvas');
             if (playerClass.ghost) {
                 cvs.style.border = '4px dashed rgba(168, 85, 247, 0.8)';
@@ -993,7 +1010,6 @@
             document.getElementById('shopSubtitle').innerText = `Stage ${stage - 1} Cleared! Prepare for the next challenge.`;
             document.getElementById('btnEnterStage').innerText = `Enter Stage ${stage}`;
 
-            // Calculate Dynamic Costs based on Purchases
             const potionCostBase = 10 * Math.pow(2, potionPurchases);
             const heartCostBase = 50 * Math.pow(2, heartPurchases);
             const appleCostBase = 30 * Math.pow(2, applePurchases);
@@ -1027,17 +1043,16 @@
         window.buyShopItem = function(idx, cost) {
             gold -= cost;
             sfx.shop();
-            // Execute action and iterate purchase counter
             if (idx === 0) { hp = Math.min(hp + 1, maxHp); potionPurchases++; }
             else if (idx === 1) { maxHp++; hp++; heartPurchases++; }
             else if (idx === 2) { foodValue++; applePurchases++; }
             else if (idx === 3) { speed = Math.min(speed + 15, 180); }
             
             updateUIPanels();
-            renderShop(); // Re-render to show updated doubled prices
+            renderShop(); 
         }
 
-        // --- 8. INPUT LISTENERS ---
+        // --- 11. INPUT LISTENERS ---
         window.addEventListener('keydown', e => {
             initAudio();
             if (gameState !== 'PLAYING') return;
@@ -1053,15 +1068,14 @@
                 }
                 
                 if (parsedDir) {
-                    // Prevent moving down into own tail on respawn/start
-                    if (parsedDir.x === 0 && parsedDir.y === 1) return;
+                    if (parsedDir.x === 0 && parsedDir.y === 1) return; // Prevent down movement on start
                     
                     isWaitingForInput = false;
                     document.getElementById('pauseOverlay').classList.add('hidden');
                     dir = parsedDir;
                     lastProcessedDir = parsedDir;
                     startIntervals();
-                    moveSnake(); // Force an immediate move for responsive feel
+                    moveSnake(); 
                 }
                 return;
             }
@@ -1080,7 +1094,6 @@
             if (gameState !== 'PLAYING') return;
 
             if (isWaitingForInput) {
-                // Prevent moving down into own tail on respawn/start
                 if (newDir.x === 0 && newDir.y === 1) return;
 
                 isWaitingForInput = false;
@@ -1097,16 +1110,7 @@
             if (newDir.x !== 0 && currentDir.x === 0) dir = newDir;
         }
 
-        // Init
-        function initProfile() {
-            if (!currentProfileName) {
-                setGameState('REGISTER');
-            } else {
-                document.getElementById('menuPlayerName').innerText = currentProfileName;
-                setGameState('MENU');
-            }
-        }
-        
+        // Init App
         lucide.createIcons();
         initProfile();
     </script>
