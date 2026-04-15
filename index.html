@@ -529,7 +529,11 @@
         function setGameState(newState) {
             gameState = newState;
             document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
-            document.getElementById(`screen-${newState}`).classList.remove('hidden');
+            
+            const targetScreen = document.getElementById(`screen-${newState}`);
+            if (targetScreen) {
+                targetScreen.classList.remove('hidden');
+            }
             
             const cvs = document.getElementById('gameCanvas');
             if (newState !== 'PLAYING') {
