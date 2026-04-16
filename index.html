@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,12 +20,12 @@
     
     <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- LEFT PANEL - GAME & MENUS -->
+        <!-- PANNEAU GAUCHE - JEU ET MENUS -->
         <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-8 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
             
             <canvas id="gameCanvas" width="400" height="400" class="bg-slate-950 rounded-xl shadow-inner w-full max-w-[450px] aspect-square transition-opacity duration-300"></canvas>
 
-            <!-- Mobile Controls -->
+            <!-- Contrôles Mobiles -->
             <div id="mobileControls" class="grid grid-cols-3 gap-2 mt-8 lg:hidden w-48 mx-auto opacity-80 hidden">
                 <div></div>
                 <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:0, y:-1})"><i data-lucide="arrow-up"></i></button>
@@ -35,16 +35,16 @@
                 <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:1, y:0})"><i data-lucide="arrow-right"></i></button>
             </div>
 
-            <!-- NAME REGISTRATION OVERLAY -->
+            <!-- ÉCRAN D'ENREGISTREMENT -->
             <div id="screen-REGISTER" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 p-6 text-center hidden backdrop-blur-md">
                 <i data-lucide="user-circle" class="text-green-500 mb-6 w-16 h-16"></i>
-                <h2 class="text-4xl font-black text-white mb-2">IDENTIFY YOURSELF</h2>
-                <p class="text-slate-400 mb-8">Enter a codename for the global leaderboards.</p>
-                <input type="text" id="playerNameInput" maxlength="12" placeholder="Enter Name (Max 12 chars)" class="bg-slate-800 border border-slate-600 text-white font-bold text-center px-6 py-4 rounded-xl mb-4 w-full max-w-xs focus:outline-none focus:border-green-500 uppercase">
-                <button onclick="savePlayerName()" class="px-8 py-4 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-colors w-full max-w-xs shadow-lg">Save Profile</button>
+                <h2 class="text-4xl font-black text-white mb-2">IDENTIFIEZ-VOUS</h2>
+                <p class="text-slate-400 mb-8">Entrez un pseudo pour le classement mondial.</p>
+                <input type="text" id="playerNameInput" maxlength="12" placeholder="Nom (Max 12 car.)" class="bg-slate-800 border border-slate-600 text-white font-bold text-center px-6 py-4 rounded-xl mb-4 w-full max-w-xs focus:outline-none focus:border-green-500 uppercase">
+                <button onclick="savePlayerName()" class="px-8 py-4 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-colors w-full max-w-xs shadow-lg">Sauvegarder le Profil</button>
             </div>
 
-            <!-- MAIN MENU SCREEN -->
+            <!-- MENU PRINCIPAL -->
             <div id="screen-MENU" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
                 <button onclick="openSettings()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors p-2 z-20">
                     <i data-lucide="settings" class="w-6 h-6"></i>
@@ -52,77 +52,94 @@
                 
                 <div class="bg-slate-800/90 p-8 rounded-3xl border border-slate-700 text-center w-full max-w-md shadow-2xl relative">
                     <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">SNAKE LITE</h1>
-                    <p class="text-slate-400 mb-6 font-medium">Welcome back, <span id="menuPlayerName" class="text-emerald-400 font-bold"></span></p>
+                    <p class="text-slate-400 mb-6 font-medium">Bon retour, <span id="menuPlayerName" class="text-emerald-400 font-bold"></span></p>
                     
-                    <button onclick="handleStartRun()" class="w-full py-4 bg-green-500 hover:bg-green-400 text-slate-950 rounded-xl font-black text-xl transition-transform hover:scale-[1.02] shadow-[0_0_20px_rgba(34,197,94,0.4)] mb-4">START RUN</button>
-                    <button onclick="toggleLeaderboard()" class="w-full py-4 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"><i data-lucide="globe" class="w-5 h-5"></i> Global Leaderboard</button>
+                    <button onclick="handleStartRun()" class="w-full py-4 bg-green-500 hover:bg-green-400 text-slate-950 rounded-xl font-black text-xl transition-transform hover:scale-[1.02] shadow-[0_0_20px_rgba(34,197,94,0.4)] mb-4">DÉMARRER</button>
+                    <button onclick="toggleLeaderboard()" class="w-full py-4 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-bold transition-colors flex items-center justify-center gap-2"><i data-lucide="globe" class="w-5 h-5"></i> Classement Mondial</button>
                 </div>
             </div>
 
-            <!-- SETTINGS / DEV TOOLS OVERLAY -->
+            <!-- ÉCRAN OUTILS DEV / PARAMÈTRES -->
             <div id="screen-SETTINGS" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-6 text-center hidden">
-                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 w-full max-w-sm relative shadow-2xl">
+                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 w-full max-w-md relative shadow-2xl">
                     <button onclick="closeSettings()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>
                     <h2 class="text-3xl font-black text-white mb-6 flex items-center justify-center gap-2">
-                        <i data-lucide="settings" class="text-slate-400 w-7 h-7"></i> DEV TOOLS
+                        <i data-lucide="settings" class="text-slate-400 w-7 h-7"></i> OUTILS DEV
                     </h2>
                     
                     <div id="devAuthBox" class="flex flex-col gap-4">
-                        <input type="password" id="devPasswordInput" placeholder="Enter Password" class="bg-slate-800 border border-slate-600 text-white font-bold text-center px-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500">
-                        <button onclick="checkDevPassword()" class="py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-colors">Authenticate</button>
+                        <input type="password" id="devPasswordInput" placeholder="Mot de passe" class="bg-slate-800 border border-slate-600 text-white font-bold text-center px-4 py-3 rounded-xl focus:outline-none focus:border-emerald-500">
+                        <button onclick="checkDevPassword()" class="py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-colors">S'authentifier</button>
                     </div>
 
                     <div id="devToolsBox" class="flex flex-col gap-6 text-left hidden">
                         <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-4 rounded-xl border border-slate-700 hover:border-emerald-500 transition-colors">
                             <input type="checkbox" id="checkInvulnerable" onchange="toggleInvulnerable(this.checked)" class="w-5 h-5 accent-emerald-500">
-                            God Mode (Invulnerable)
+                            Mode Dieu (Invulnérable)
                         </label>
-                        <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-4 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors">
-                            <input type="checkbox" id="checkMaxMods" onchange="toggleForceMaxModifiers(this.checked)" class="w-5 h-5 accent-purple-500">
-                            Force Max Modifiers
-                        </label>
+                        
+                        <div>
+                            <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Forcer Modificateurs (Niv. 10)</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificMod('ROCKS', this.checked)" class="w-4 h-4 accent-purple-500"> Rochers
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificMod('SPOILED_APPLES', this.checked)" class="w-4 h-4 accent-purple-500"> Pommes P.
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificMod('MOVING_FOOD', this.checked)" class="w-4 h-4 accent-purple-500"> Nourriture M.
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificMod('ICE_PATCHES', this.checked)" class="w-4 h-4 accent-purple-500"> Glace
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors text-sm sm:col-span-2">
+                                    <input type="checkbox" onchange="toggleSpecificMod('SKELETON_SPAWNER', this.checked)" class="w-4 h-4 accent-purple-500"> Nécromancien
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- LEADERBOARD OVERLAY -->
+            <!-- ÉCRAN CLASSEMENT -->
             <div id="screen-LEADERBOARD" class="absolute inset-0 z-20 flex flex-col items-center bg-slate-900/95 p-6 overflow-hidden hidden">
-                <h2 class="text-3xl font-black text-amber-400 mb-4 flex items-center gap-2"><i data-lucide="trophy"></i> HALL OF FAME</h2>
+                <h2 class="text-3xl font-black text-amber-400 mb-4 flex items-center gap-2"><i data-lucide="trophy"></i> PANTHÉON</h2>
                 
                 <div class="flex gap-2 p-1 bg-slate-800 rounded-lg mb-6 w-full max-w-sm">
-                    <button id="btnTabLifetime" onclick="fetchLeaderboard('lifetime')" class="flex-1 py-2 bg-slate-600 rounded text-white font-bold text-sm transition-colors">LIFETIME</button>
-                    <button id="btnTabWeekly" onclick="fetchLeaderboard('weekly')" class="flex-1 py-2 hover:bg-slate-700 rounded text-slate-400 font-bold text-sm transition-colors">THIS WEEK</button>
+                    <button id="btnTabLifetime" onclick="fetchLeaderboard('lifetime')" class="flex-1 py-2 bg-slate-600 rounded text-white font-bold text-sm transition-colors">GLOBAL</button>
+                    <button id="btnTabWeekly" onclick="fetchLeaderboard('weekly')" class="flex-1 py-2 hover:bg-slate-700 rounded text-slate-400 font-bold text-sm transition-colors">CETTE SEMAINE</button>
                 </div>
 
                 <div class="w-full max-w-sm bg-slate-950 border border-slate-700 rounded-xl overflow-hidden flex flex-col flex-1 max-h-[300px]">
                     <div class="flex justify-between items-center bg-slate-800 p-3 text-xs font-bold text-slate-400 border-b border-slate-700 uppercase tracking-wider">
-                        <span>Rank & Name</span>
-                        <span>Stage Reached</span>
+                        <span>Rang & Nom</span>
+                        <span>Niveau Atteint</span>
                     </div>
                     <div id="leaderboardList" class="overflow-y-auto flex-1 p-2 custom-scrollbar flex flex-col gap-1">
-                        <div class="text-center text-slate-500 py-8 italic text-sm" id="leaderboardLoading">Loading database...</div>
+                        <div class="text-center text-slate-500 py-8 italic text-sm" id="leaderboardLoading">Chargement de la base de données...</div>
                     </div>
                 </div>
                 
-                <button onclick="toggleLeaderboard()" class="mt-6 text-slate-400 hover:text-white transition-colors font-bold flex items-center gap-2"><i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Menu</button>
+                <button onclick="toggleLeaderboard()" class="mt-6 text-slate-400 hover:text-white transition-colors font-bold flex items-center gap-2"><i data-lucide="arrow-left" class="w-4 h-4"></i> Retour au Menu</button>
             </div>
 
-            <!-- CLASS SELECT SCREEN -->
+            <!-- ÉCRAN SÉLECTION CLASSE -->
             <div id="screen-CLASS_SELECT" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col p-6 overflow-y-auto items-center hidden">
-                <h2 class="text-3xl font-black text-white mb-6 mt-4">DRAFT YOUR SNAKE</h2>
+                <h2 class="text-3xl font-black text-white mb-6 mt-4">CHOISISSEZ VOTRE SERPENT</h2>
                 <div id="classSelectGrid" class="flex flex-col gap-4 w-full max-w-md"></div>
-                <button onclick="quitToMenu()" class="mt-6 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold px-4 py-2"><i data-lucide="arrow-left" class="w-5 h-5"></i> Back to Menu</button>
+                <button onclick="quitToMenu()" class="mt-6 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold px-4 py-2"><i data-lucide="arrow-left" class="w-5 h-5"></i> Retour au Menu</button>
             </div>
 
-            <!-- SHOP SCREEN -->
+            <!-- ÉCRAN BOUTIQUE -->
             <div id="screen-SHOP" class="absolute inset-0 bg-slate-900/95 z-10 flex flex-col p-6 md:p-10 overflow-y-auto hidden">
-                <h2 class="text-3xl font-black text-amber-400 flex items-center gap-3 mb-2"><i data-lucide="store" class="w-8 h-8"></i> UPGRADE SHOP</h2>
+                <h2 class="text-3xl font-black text-amber-400 flex items-center gap-3 mb-2"><i data-lucide="store" class="w-8 h-8"></i> BOUTIQUE D'AMÉLIORATIONS</h2>
                 <div id="shopEscalation" class="mb-6 p-4 bg-red-950/50 border border-red-500/50 rounded-xl flex items-start gap-4 shadow-lg hidden">
                     <i data-lucide="alert-triangle" class="text-red-500 shrink-0 mt-1 animate-pulse-fast w-7 h-7"></i>
                     <div>
-                        <h3 class="font-bold text-red-400 text-lg uppercase tracking-wider mb-1">Warning: Escalation!</h3>
+                        <h3 class="font-bold text-red-400 text-lg uppercase tracking-wider mb-1">Attention : Escalade !</h3>
                         <p id="shopEscalationText" class="text-red-200/80 text-sm"></p>
                     </div>
                 </div>
@@ -134,47 +151,47 @@
                 </div>
             </div>
 
-            <!-- PAUSE/START OVERLAY -->
+            <!-- ÉCRAN PAUSE/DÉPART -->
             <div id="pauseOverlay" class="absolute inset-0 z-10 flex flex-col items-center justify-end pb-12 text-center hidden pointer-events-none">
                 <div id="pauseOverlayBox" class="bg-slate-900/90 border border-emerald-500/50 p-5 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.2)] backdrop-blur-sm pointer-events-auto mb-4 transition-colors">
-                    <h2 id="pauseTitle" class="text-2xl font-black text-emerald-400 mb-1">STAGE 1</h2>
-                    <p id="pauseSubtitle" class="text-slate-200 mb-3 text-sm">Plan your opening move.</p>
-                    <p class="text-amber-400 font-bold animate-pulse-fast bg-slate-950 px-5 py-2 rounded-full border border-amber-500/30 text-sm">Press W, A, or D to start</p>
+                    <h2 id="pauseTitle" class="text-2xl font-black text-emerald-400 mb-1">NIVEAU 1</h2>
+                    <p id="pauseSubtitle" class="text-slate-200 mb-3 text-sm">Préparez votre premier mouvement.</p>
+                    <p class="text-amber-400 font-bold animate-pulse-fast bg-slate-950 px-5 py-2 rounded-full border border-amber-500/30 text-sm">Appuyez sur Z, Q, S, D ou Flèches</p>
                 </div>
             </div>
 
-            <!-- GAMEOVER SCREEN -->
+            <!-- ÉCRAN FIN DE PARTIE -->
             <div id="screen-GAMEOVER" class="absolute inset-0 bg-slate-950/90 z-20 flex flex-col items-center justify-center p-6 text-center hidden">
                 <i data-lucide="skull" class="text-red-500 mb-6 animate-pulse-fast w-16 h-16"></i>
-                <h2 class="text-5xl font-black text-white mb-2">RUN ENDED</h2>
+                <h2 class="text-5xl font-black text-white mb-2">PARTIE TERMINÉE</h2>
                 <p id="gameOverText" class="text-slate-400 mb-4 text-lg"></p>
                 <p id="scoreSubmitText" class="text-emerald-400 font-bold text-sm mb-8 bg-emerald-950/50 px-4 py-2 rounded-lg border border-emerald-900 hidden"></p>
                 <div class="flex flex-col sm:flex-row gap-4">
-                    <button onclick="handleStartRun()" class="px-8 py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors text-lg">Draft New Run</button>
-                    <button onclick="quitToMenu()" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-white transition-colors text-lg border border-slate-700">Main Menu</button>
+                    <button onclick="handleStartRun()" class="px-8 py-4 bg-red-600 hover:bg-red-500 rounded-xl font-bold text-white transition-colors text-lg">Nouvelle Partie</button>
+                    <button onclick="quitToMenu()" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold text-white transition-colors text-lg border border-slate-700">Menu Principal</button>
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT PANEL - STATS UI -->
+        <!-- PANNEAU DROIT - STATUT UI -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-6 overflow-y-auto max-h-[85vh]">
             <div>
-                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2">Run Status</h3>
+                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2">Statut de la Partie</h3>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1">
-                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="trophy" class="text-yellow-500 w-4 h-4"></i> Stage</div>
+                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="trophy" class="text-yellow-500 w-4 h-4"></i> Niveau</div>
                         <div id="uiStage" class="font-black text-2xl text-white">1</div>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1">
-                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="heart" class="text-red-500 w-4 h-4"></i> Health</div>
+                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="heart" class="text-red-500 w-4 h-4"></i> Santé</div>
                         <div class="font-black text-2xl text-white"><span id="uiHp">3</span> <span class="text-slate-600 text-lg">/ <span id="uiMaxHp">3</span></span></div>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1">
-                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="coins" class="text-amber-400 w-4 h-4"></i> Gold</div>
+                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="coins" class="text-amber-400 w-4 h-4"></i> Or</div>
                         <div id="uiGold" class="font-black text-2xl text-white">0</div>
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 relative overflow-hidden">
-                        <div class="flex items-center gap-2 text-slate-400 text-sm z-10"><i data-lucide="zap" class="text-blue-400 w-4 h-4"></i> Progress</div>
+                        <div class="flex items-center gap-2 text-slate-400 text-sm z-10"><i data-lucide="zap" class="text-blue-400 w-4 h-4"></i> Progression</div>
                         <div class="font-black text-2xl text-white z-10"><span id="uiFood">0</span> <span class="text-slate-600 text-lg">/ <span id="uiFoodReq">7</span></span></div>
                         <div id="uiProgressBar" class="absolute bottom-0 left-0 h-1 bg-blue-500/50 transition-all duration-300" style="width: 0%"></div>
                     </div>
@@ -182,32 +199,32 @@
             </div>
             
             <div id="uiModsContainer" class="hidden">
-                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2"><i data-lucide="alert-triangle" class="text-red-500 w-3.5 h-3.5"></i> Active Modifiers</h3>
+                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2"><i data-lucide="alert-triangle" class="text-red-500 w-3.5 h-3.5"></i> Modificateurs Actifs</h3>
                 <div id="uiModsList" class="flex flex-col gap-2"></div>
             </div>
 
             <div>
-                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs">Current Build</h3>
+                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs">Build Actuel</h3>
                 <ul class="space-y-2 text-sm text-slate-300 bg-slate-950 border border-slate-800 p-4 rounded-xl">
-                    <li class="flex justify-between items-center"><span>Class</span> <span id="uiClass" class="font-bold text-green-400">Python</span></li>
-                    <li class="flex justify-between items-center"><span>Income Multiplier</span> <span id="uiMult" class="font-bold text-amber-400 bg-amber-400/10 px-2 py-1 rounded">x1</span></li>
-                    <li class="flex justify-between items-center"><span>Movement Delay</span> <span id="uiSpeed" class="font-bold text-white bg-slate-800 px-2 py-1 rounded">100ms</span></li>
-                    <li class="flex justify-between items-center"><span>Growth Rate</span> <span id="uiGrowth" class="font-bold px-2 py-1 rounded text-slate-300 bg-slate-800">+1</span></li>
+                    <li class="flex justify-between items-center"><span>Classe</span> <span id="uiClass" class="font-bold text-green-400">Python</span></li>
+                    <li class="flex justify-between items-center"><span>Multiplicateur d'Or</span> <span id="uiMult" class="font-bold text-amber-400 bg-amber-400/10 px-2 py-1 rounded">x1</span></li>
+                    <li class="flex justify-between items-center"><span>Délai de Mouvement</span> <span id="uiSpeed" class="font-bold text-white bg-slate-800 px-2 py-1 rounded">100ms</span></li>
+                    <li class="flex justify-between items-center"><span>Taux de Croissance</span> <span id="uiGrowth" class="font-bold px-2 py-1 rounded text-slate-300 bg-slate-800">+1</span></li>
                 </ul>
             </div>
             
             <div class="flex-1 flex flex-col justify-end gap-4">
                 <div class="text-sm text-slate-500 text-center bg-slate-950/50 p-4 rounded-xl border border-slate-800/50">
-                    <strong>Controls:</strong> WASD or Arrow Keys.
+                    <strong>Contrôles :</strong> ZQSD ou Flèches.
                 </div>
                 <button id="btnAbandon" onclick="quitToMenu()" class="py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-bold transition-colors flex items-center justify-center gap-2 border border-red-500/20 shrink-0 hidden">
-                    <i data-lucide="log-out" class="w-4 h-4"></i> Abandon Run
+                    <i data-lucide="log-out" class="w-4 h-4"></i> Abandonner
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- FIREBASE MODULES (IMPORT) -->
+    <!-- MODULES FIREBASE (IMPORT) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, push, query, orderByChild, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
@@ -237,9 +254,9 @@
                     timestamp: Date.now()
                 });
             } catch (e) {
-                console.error("Error saving score:", e);
+                console.error("Erreur de sauvegarde:", e);
                 const submitText = document.getElementById('scoreSubmitText');
-                submitText.innerText = "Network error. Score not saved.";
+                submitText.innerText = "Erreur réseau. Score non sauvegardé.";
                 submitText.className = "text-red-400 font-bold text-sm mb-8 bg-red-950/50 px-4 py-2 rounded-lg border border-red-900";
             }
         };
@@ -272,16 +289,16 @@
                 }
                 return [];
             } catch (error) {
-                console.error("Firebase Fetch Error:", error);
+                console.error("Erreur Fetch Firebase:", error);
                 throw error;
             }
         };
     </script>
 
     <script>
-        // --- 0. DEV TOOLS & SETTINGS ---
+        // --- 0. OUTILS DEV & PARAMÈTRES ---
         let isInvulnerable = false;
-        let forceMaxModifiers = false;
+        let forcedMaxMods = { ROCKS: false, SPOILED_APPLES: false, MOVING_FOOD: false, ICE_PATCHES: false, SKELETON_SPAWNER: false };
         let isSettingsUnlocked = false;
 
         window.openSettings = function() {
@@ -299,7 +316,7 @@
                 document.getElementById('devAuthBox').classList.add('hidden');
                 document.getElementById('devToolsBox').classList.remove('hidden');
             } else {
-                alert('Access Denied: Incorrect Password');
+                alert('Accès Refusé : Mot de passe incorrect');
             }
         }
 
@@ -307,15 +324,31 @@
             isInvulnerable = checked;
         }
 
-        window.toggleForceMaxModifiers = function(checked) {
-            forceMaxModifiers = checked;
-            if (checked && gameState === 'PLAYING') {
-                activeModifiers = { ROCKS: 10, SPOILED_APPLES: 10, MOVING_FOOD: 10, ICE_PATCHES: 10 };
+        window.toggleSpecificMod = function(modId, checked) {
+            forcedMaxMods[modId] = checked;
+            
+            // Si le jeu est en cours, appliquer les changements instantanément
+            if (gameState === 'PLAYING') {
+                if (checked) {
+                    activeModifiers[modId] = 10;
+                } else {
+                    delete activeModifiers[modId];
+                }
+                
+                if (['ROCKS', 'ICE_PATCHES', 'SKELETON_SPAWNER'].includes(modId)) {
+                    generateEnvironment();
+                }
+                if (modId === 'SPOILED_APPLES') {
+                    spawnSpoiledApples();
+                }
+                
+                startIntervals(); // Relance ou coupe les timers spéciaux (IA, nourriture mobile)
                 updateUIPanels();
+                drawCanvas();
             }
         }
 
-        // --- 1. LOCAL SAVE & PROFILE LOGIC ---
+        // --- 1. LOGIQUE SAUVEGARDE & PROFIL ---
         let currentProfileName = localStorage.getItem('snakeLite_Name');
 
         function initProfile() {
@@ -335,11 +368,11 @@
                 document.getElementById('menuPlayerName').innerText = currentProfileName;
                 setGameState('MENU');
             } else {
-                alert("Please enter a valid name (1-12 characters).");
+                alert("Veuillez entrer un nom valide (1-12 caractères).");
             }
         }
 
-        // --- 2. LEADERBOARD UI LOGIC ---
+        // --- 2. LOGIQUE UI CLASSEMENT ---
         let currentLeaderboardTab = 'lifetime';
         
         window.toggleLeaderboard = function() {
@@ -364,7 +397,7 @@
             }
 
             const listDiv = document.getElementById('leaderboardList');
-            listDiv.innerHTML = '<div class="text-center text-slate-500 py-8 italic text-sm">Loading database...</div>';
+            listDiv.innerHTML = '<div class="text-center text-slate-500 py-8 italic text-sm">Chargement de la base de données...</div>';
 
             try {
                 let scores = await window.dbFetchScores();
@@ -377,7 +410,7 @@
                 scores = scores.slice(0, 10);
 
                 if (scores.length === 0) {
-                    listDiv.innerHTML = '<div class="text-center text-slate-500 py-8 italic text-sm">No scores found. Be the first!</div>';
+                    listDiv.innerHTML = '<div class="text-center text-slate-500 py-8 italic text-sm">Aucun score trouvé. Soyez le premier !</div>';
                     return;
                 }
 
@@ -394,11 +427,11 @@
                     </div>`;
                 }).join('');
             } catch (e) {
-                listDiv.innerHTML = '<div class="text-center text-red-500 py-8 italic text-sm">Error connecting to server.</div>';
+                listDiv.innerHTML = '<div class="text-center text-red-500 py-8 italic text-sm">Erreur de connexion au serveur.</div>';
             }
         }
 
-        // --- 3. GAME CONSTANTS & DATA ---
+        // --- 3. CONSTANTES & DONNÉES DU JEU ---
         const GRID_SIZE = 20;
         const CELL_SIZE = 20;
         const CANVAS_SIZE = GRID_SIZE * CELL_SIZE;
@@ -407,21 +440,22 @@
         const INITIAL_DIR = { x: 0, y: -1 };
 
         const CLASSES = {
-            PYTHON: { id: 'PYTHON', name: 'Python', desc: 'A balanced starter. No special weaknesses.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-green-400', icon: 'activity', iconColor: 'text-green-500' },
-            GHOST: { id: 'GHOST', name: 'Ghost', desc: 'Passes through rocks, but fragile and grows +2 per food.', baseHp: 1, baseSpeed: 100, ghost: true, goldMult: 1, growthPerFood: 2, colorClass: 'text-purple-400', icon: 'ghost', iconColor: 'text-purple-500' },
-            VIPER: { id: 'VIPER', name: 'Viper', desc: 'Moves fast and finds double gold. Squishy.', baseHp: 2, baseSpeed: 75, ghost: false, goldMult: 2, growthPerFood: 1, colorClass: 'text-blue-400', icon: 'wind', iconColor: 'text-blue-500' },
-            HYDRA: { id: 'HYDRA', name: 'Hydra', desc: '25% chance to spawn an extra piece of food on bite.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-pink-400', icon: 'dna', iconColor: 'text-pink-500' },
-            MERCHANT: { id: 'MERCHANT', name: 'Merchant', desc: 'Shop items cost 20% less. Starts with 50 gold.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-amber-500', icon: 'shopping-bag', iconColor: 'text-amber-500' },
+            PYTHON: { id: 'PYTHON', name: 'Python', desc: 'Un choix équilibré. Aucune faiblesse particulière.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-green-400', icon: 'activity', iconColor: 'text-green-500' },
+            GHOST: { id: 'GHOST', name: 'Fantôme', desc: 'Traverse les rochers, mais fragile. Grandit de +2.', baseHp: 1, baseSpeed: 100, ghost: true, goldMult: 1, growthPerFood: 2, colorClass: 'text-purple-400', icon: 'ghost', iconColor: 'text-purple-500' },
+            VIPER: { id: 'VIPER', name: 'Vipère', desc: 'Rapide, trouve 2x plus d\'or, mais très fragile.', baseHp: 2, baseSpeed: 75, ghost: false, goldMult: 2, growthPerFood: 1, colorClass: 'text-blue-400', icon: 'wind', iconColor: 'text-blue-500' },
+            HYDRA: { id: 'HYDRA', name: 'Hydre', desc: '25% de chance de générer de la nourriture en mangeant.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-pink-400', icon: 'dna', iconColor: 'text-pink-500' },
+            MERCHANT: { id: 'MERCHANT', name: 'Marchand', desc: 'Boutique à -20%. Commence avec 50 pièces d\'or.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-amber-500', icon: 'shopping-bag', iconColor: 'text-amber-500' },
         };
 
         const MODIFIER_TYPES = {
-            ROCKS: { id: 'ROCKS', name: 'Static Terrain', desc: 'Indestructible rocks spawn. (Max Lv.10)', icon: 'mountain', color: 'text-slate-400' },
-            SPOILED_APPLES: { id: 'SPOILED_APPLES', name: 'Spoiled Apples', desc: 'Poisonous food spawns. Avoid it! (Max Lv.10)', icon: 'biohazard', color: 'text-lime-400' },
-            MOVING_FOOD: { id: 'MOVING_FOOD', name: 'Moving Food', desc: 'Normal food hops away periodically! (Max Lv.10)', icon: 'rabbit', color: 'text-pink-400' },
-            ICE_PATCHES: { id: 'ICE_PATCHES', name: 'Ice Patches', desc: 'Snake slides on ice! Cannot turn. (Max Lv.10)', icon: 'snowflake', color: 'text-cyan-300' }
+            ROCKS: { id: 'ROCKS', name: 'Terrain Statique', desc: 'Des rochers indestructibles apparaissent. (Max Niv.10)', icon: 'mountain', color: 'text-slate-400' },
+            SPOILED_APPLES: { id: 'SPOILED_APPLES', name: 'Pommes Pourries', desc: 'Nourriture empoisonnée. À éviter ! (Max Niv.10)', icon: 'biohazard', color: 'text-lime-400' },
+            MOVING_FOOD: { id: 'MOVING_FOOD', name: 'Nourriture Mobile', desc: 'La nourriture normale saute périodiquement ! (Max Niv.10)', icon: 'rabbit', color: 'text-pink-400' },
+            ICE_PATCHES: { id: 'ICE_PATCHES', name: 'Plaques de Glace', desc: 'Le serpent glisse ! Impossible de tourner. (Max Niv.10)', icon: 'snowflake', color: 'text-cyan-300' },
+            SKELETON_SPAWNER: { id: 'SKELETON_SPAWNER', name: 'Nécromancien', desc: 'Des Squelettes harcèlent vos flancs ! (Max Niv.10)', icon: 'skull', color: 'text-zinc-400' }
         };
 
-        // --- 4. STATE VARIABLES ---
+        // --- 4. VARIABLES D'ÉTAT ---
         let gameState = 'MENU';
         let playerClass = CLASSES.PYTHON;
         let stage = 1, hp = 3, maxHp = 3, gold = 0, foodEaten = 0, foodValue = 1, speed = 100;
@@ -434,20 +468,21 @@
         let snake = [...INITIAL_SNAKE];
         let dir = {...INITIAL_DIR};
         let lastProcessedDir = {...INITIAL_DIR};
-        let foods = [{ x: 5, y: 5 }];
+        let foods = [{ x: 5, y: 5, type: 'APPLE' }];
         let rocks = [], ice = [], spoiledFoods = [];
+        let spawners = [], enemies = [];
         let bigSpoiledFood = null;
         let growthQueue = 0;
 
         let gameLoopRef = null;
-        let foodTickIntervalRef = null;
+        let tickIntervalRef = null;
         let lastDamageTime = 0;
         let isWaitingForInput = false;
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Dynamic stage scaling!
+        // Échelonnage dynamique des niveaux !
         const FOOD_TO_ADVANCE = () => {
             let req = 5;
             for (let i = 2; i <= stage; i++) {
@@ -462,7 +497,7 @@
         
         const getShopCost = (baseCost) => playerClass.id === 'MERCHANT' ? Math.round(baseCost * 0.8) : baseCost;
 
-        // --- 5. RETRO SOUND ENGINE (WEB AUDIO API) ---
+        // --- 5. MOTEUR AUDIO RÉTRO (WEB AUDIO API) ---
         let audioCtx = null;
         
         function initAudio() {
@@ -503,7 +538,7 @@
             }
         };
 
-        // --- INDEPENDENT MOVEMENT TIMERS ---
+        // --- TIMERS DE MOUVEMENT INDÉPENDANTS ---
         function getFoodMoveDelay() {
             const level = activeModifiers.MOVING_FOOD || 0;
             if (level === 0) return Infinity;
@@ -515,13 +550,25 @@
             return Math.floor(Math.random() * (maxTime - minTime + 1) + minTime);
         }
 
+        function getSpawnerDelay(level) {
+            const clamped = Math.min(level, 10);
+            return Math.floor(5000 - ((clamped - 1) * (4000 / 9)));
+        }
+
         function resetFoodTimers() {
             const now = Date.now();
             foods.forEach(f => f.nextMoveTime = now + getFoodMoveDelay());
             spoiledFoods.forEach(s => s.nextMoveTime = now + getFoodMoveDelay());
         }
 
-        // --- 6. GENERATION LOGIC ---
+        function getRandomFoodType() {
+            const rand = Math.random();
+            if (rand < 0.60) return 'APPLE';
+            if (rand < 0.90) return 'BANANA';
+            return 'MELON';
+        }
+
+        // --- 6. LOGIQUE DE GÉNÉRATION ---
         function getEmptySpot(checkSnake = true, checkRocks = true, checkIce = true, checkFood = true, additionalAvoids = [], minDistFromHead = 0) {
             let spot = { x: 0, y: 0 };
             const head = snake[0];
@@ -640,6 +687,15 @@
                 }
             }
             rocks = newRocks;
+
+            const spawnerLevel = activeModifiers.SKELETON_SPAWNER || 0;
+            let newSpawners = [];
+            if (spawnerLevel > 0) {
+                const spot = getEmptySpot(true, true, true, true, [...newRocks, ...newIce], 5);
+                newSpawners.push({ ...spot, nextSpawnTime: Date.now() + getSpawnerDelay(spawnerLevel) });
+            }
+            spawners = newSpawners;
+            enemies = [];
         }
 
         function spawnSpoiledApples() {
@@ -648,13 +704,13 @@
             bigSpoiledFood = null;
             
             for(let i = 0; i < spoiledLevel; i++) {
-                const spot = getEmptySpot(true, true, true, true, [...foods, ...newSpoiled], 5);
+                const spot = getEmptySpot(true, true, true, true, [...foods, ...newSpoiled, ...spawners], 5);
                 newSpoiled.push({ ...spot, nextMoveTime: Date.now() + getFoodMoveDelay() }); 
             }
             spoiledFoods = newSpoiled;
             
             if (spoiledLevel >= 10) {
-                bigSpoiledFood = getEmptySpot2x2([...foods, ...newSpoiled]);
+                bigSpoiledFood = getEmptySpot2x2([...foods, ...newSpoiled, ...spawners]);
             }
         }
 
@@ -664,17 +720,18 @@
             growthQueue = 0;
             generateEnvironment();
             
-            const initialSpot = getEmptySpot(true, true, true, true, [], 4);
-            foods = [{ ...initialSpot, nextMoveTime: Date.now() + getFoodMoveDelay() }];
+            const initialSpot = getEmptySpot(true, true, true, true, spawners, 4);
+            foods = [{ ...initialSpot, type: 'APPLE', nextMoveTime: Date.now() + getFoodMoveDelay() }];
             
             spawnSpoiledApples();
         }
 
-        // --- 7. PHYSICS & TIMERS LOGIC ---
+        // --- 7. PHYSIQUE ET TIMERS ---
         function tryMoveEntity(entity, isSpoiled) {
             const isValidSpot = (spot) => {
                 if (spot.x < 0 || spot.x >= GRID_SIZE || spot.y < 0 || spot.y >= GRID_SIZE) return false;
                 if (rocks.some(r => r.x === spot.x && r.y === spot.y)) return false;
+                if (spawners.some(s => s.x === spot.x && s.y === spot.y)) return false;
                 if (snake.some(s => s.x === spot.x && s.y === spot.y)) return false;
                 
                 if (bigSpoiledFood) {
@@ -708,39 +765,172 @@
             return entity;
         }
 
-        function tickFoodMoves() {
+        function tickEntities() {
             if (gameState !== 'PLAYING') return;
             const now = Date.now();
             let moved = false;
+            let tookDamage = false;
 
-            foods = foods.map(f => {
-                if (now >= f.nextMoveTime) {
-                    const newSpot = tryMoveEntity(f, false);
-                    if (newSpot !== f) moved = true;
-                    return { ...newSpot, nextMoveTime: now + getFoodMoveDelay() };
+            if (activeModifiers.MOVING_FOOD > 0) {
+                foods = foods.map(f => {
+                    if (now >= f.nextMoveTime) {
+                        const newSpot = tryMoveEntity(f, false);
+                        if (newSpot !== f) moved = true;
+                        return { ...newSpot, nextMoveTime: now + getFoodMoveDelay() };
+                    }
+                    return f;
+                });
+
+                spoiledFoods = spoiledFoods.map(s => {
+                    if (now >= s.nextMoveTime) {
+                        const newSpot = tryMoveEntity(s, true);
+                        if (newSpot !== s) moved = true;
+                        return { ...newSpot, nextMoveTime: now + getFoodMoveDelay() };
+                    }
+                    return s;
+                });
+            }
+
+            if (activeModifiers.SKELETON_SPAWNER > 0) {
+                const spawnerLevel = activeModifiers.SKELETON_SPAWNER;
+                const maxEnemies = spawnerLevel; 
+                
+                spawners.forEach(sp => {
+                    if (now >= sp.nextSpawnTime && enemies.length < maxEnemies) {
+                        const adj = [{x: sp.x+1, y: sp.y}, {x: sp.x-1, y: sp.y}, {x: sp.x, y: sp.y+1}, {x: sp.x, y: sp.y-1}];
+                        const valid = adj.filter(spot => {
+                            if (spot.x < 0 || spot.x >= GRID_SIZE || spot.y < 0 || spot.y >= GRID_SIZE) return false;
+                            if (rocks.some(r => r.x === spot.x && r.y === spot.y)) return false;
+                            if (spawners.some(s => s.x === spot.x && s.y === spot.y)) return false;
+                            if (snake.some(s => s.x === spot.x && s.y === spot.y)) return false;
+                            if (enemies.some(e => e.x === spot.x && e.y === spot.y)) return false;
+                            return true;
+                        });
+                        
+                        if (valid.length > 0) {
+                            const spot = valid[Math.floor(Math.random() * valid.length)];
+                            // Ajout de la propriété scaredMoves pour tracker l'essoufflement
+                            enemies.push({ ...spot, nextMoveTime: now + 400, scaredMoves: 0 });
+                            sp.nextSpawnTime = now + getSpawnerDelay(spawnerLevel);
+                        }
+                    }
+                });
+
+                for (let i = enemies.length - 1; i >= 0; i--) {
+                    let e = enemies[i];
+                    if (now >= e.nextMoveTime) {
+                        const head = snake[0];
+                        const distToHead = Math.abs(e.x - head.x) + Math.abs(e.y - head.y);
+                        
+                        // Vision en ligne droite : même ligne ou colonne, à 5 cases ou moins
+                        const inLineOfSight = (e.x === head.x && Math.abs(e.y - head.y) <= 5) || 
+                                              (e.y === head.y && Math.abs(e.x - head.x) <= 5);
+                        
+                        // Fuit si la tête est proche (3 cases) OU vue au loin en ligne droite (5 cases)
+                        const isScared = distToHead <= 3 || inLineOfSight;
+
+                        // Mise à jour de l'adrénaline de fuite
+                        if (isScared) {
+                            e.scaredMoves = (e.scaredMoves || 0) + 1;
+                        } else {
+                            e.scaredMoves = 0; // Se calme s'il n'est plus poursuivi
+                        }
+
+                        // Calcul de la vitesse dynamique (Démarrage explosif puis essoufflement)
+                        let scaredDelay = 120;
+                        if (e.scaredMoves === 1) scaredDelay = 75;
+                        else if (e.scaredMoves === 2) scaredDelay = 85;
+                        else if (e.scaredMoves === 3) scaredDelay = 95;
+
+                        const adj = [{x: e.x+1, y: e.y}, {x: e.x-1, y: e.y}, {x: e.x, y: e.y+1}, {x: e.x, y: e.y-1}];
+                        const valid = adj.filter(spot => {
+                            if (spot.x < 0 || spot.x >= GRID_SIZE || spot.y < 0 || spot.y >= GRID_SIZE) return false;
+                            if (rocks.some(r => r.x === spot.x && r.y === spot.y)) return false;
+                            if (spawners.some(s => s.x === spot.x && s.y === spot.y)) return false;
+                            if (enemies.some(en => en !== e && en.x === spot.x && en.y === spot.y)) return false;
+                            if (bigSpoiledFood && spot.x >= bigSpoiledFood.x && spot.x <= bigSpoiledFood.x+1 && spot.y >= bigSpoiledFood.y && spot.y <= bigSpoiledFood.y+1) return false;
+                            return true;
+                        });
+
+                        if (valid.length > 0) {
+                            let bestSpot = valid[0];
+                            if (isScared) {
+                                // FUITE : Maximiser la distance par rapport à la tête
+                                let maxD = -1;
+                                valid.forEach(v => {
+                                    const d = Math.abs(v.x - head.x) + Math.abs(v.y - head.y);
+                                    if (d > maxD) { 
+                                        maxD = d; 
+                                        bestSpot = v; 
+                                    } else if (d === maxD && Math.random() > 0.5) {
+                                        // Randomisation pour éviter qu'il ne se coince dans une boucle d'allers-retours
+                                        bestSpot = v;
+                                    }
+                                });
+                            } else {
+                                // ATTAQUE : Minimiser la distance vers le segment le plus proche (en ignorant la tête)
+                                let minD = Infinity;
+                                valid.forEach(v => {
+                                    let closestBodyDist = Infinity;
+                                    // On cible les flancs (on ignore les segments 0 et 1 pour éviter un face-à-face accidentel)
+                                    const startIndex = snake.length > 2 ? 2 : snake.length - 1;
+                                    
+                                    for (let j = startIndex; j < snake.length; j++) {
+                                        const dBody = Math.abs(v.x - snake[j].x) + Math.abs(v.y - snake[j].y);
+                                        if (dBody < closestBodyDist) closestBodyDist = dBody;
+                                    }
+                                    
+                                    if (closestBodyDist < minD) { 
+                                        minD = closestBodyDist; 
+                                        bestSpot = v; 
+                                    } else if (closestBodyDist === minD && Math.random() > 0.5) {
+                                        bestSpot = v;
+                                    }
+                                });
+                            }
+
+                            // A-t-il touché le corps du serpent lors de son déplacement ?
+                            const hitSnake = snake.some(s => s.x === bestSpot.x && s.y === bestSpot.y);
+                            if (hitSnake) {
+                                enemies.splice(i, 1);
+                                tookDamage = true;
+                            } else {
+                                e.x = bestSpot.x;
+                                e.y = bestSpot.y;
+                                // Application de la vitesse dynamique d'adrénaline
+                                e.nextMoveTime = now + (isScared ? scaredDelay : 400); 
+                                moved = true;
+                            }
+                        } else {
+                            e.nextMoveTime = now + (isScared ? scaredDelay : 400); 
+                        }
+                    }
                 }
-                return f;
-            });
+            }
 
-            spoiledFoods = spoiledFoods.map(s => {
-                if (now >= s.nextMoveTime) {
-                    const newSpot = tryMoveEntity(s, true);
-                    if (newSpot !== s) moved = true;
-                    return { ...newSpot, nextMoveTime: now + getFoodMoveDelay() };
+            if (tookDamage) {
+                if (!isInvulnerable) hp -= 1;
+                sfx.damage();
+                triggerDamageVisuals();
+                // Si le squelette kamikaze vous touche, on ne réinitialise PAS le plateau (sauf si mort)
+                if (hp <= 0) {
+                    handleDamage();
+                } else {
+                    updateUIPanels();
+                    drawCanvas();
                 }
-                return s;
-            });
-
-            if (moved) drawCanvas();
+            } else if (moved) {
+                drawCanvas();
+            }
         }
 
         function startIntervals() {
             clearInterval(gameLoopRef);
             gameLoopRef = setInterval(moveSnake, speed);
 
-            clearInterval(foodTickIntervalRef);
-            if (activeModifiers.MOVING_FOOD > 0) {
-                foodTickIntervalRef = setInterval(tickFoodMoves, 50);
+            clearInterval(tickIntervalRef);
+            if (activeModifiers.MOVING_FOOD > 0 || activeModifiers.SKELETON_SPAWNER > 0) {
+                tickIntervalRef = setInterval(tickEntities, 50);
             }
         }
 
@@ -750,7 +940,6 @@
             const head = snake[0];
             const onIce = ice.some(iceTile => iceTile.x === head.x && iceTile.y === head.y);
             
-            // Ice mechanic
             if (onIce) dir = lastProcessedDir;
 
             const currentDir = dir;
@@ -759,7 +948,7 @@
             const newHead = { x: head.x + currentDir.x, y: head.y + currentDir.y };
             let hitWall = newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE;
             
-            // UNIVERSAL WALL WRAP
+            // MÉCANIQUE PASSAGE DE MUR
             if (hitWall) {
                 newHead.x = (newHead.x + GRID_SIZE) % GRID_SIZE;
                 newHead.y = (newHead.y + GRID_SIZE) % GRID_SIZE;
@@ -767,20 +956,21 @@
             }
 
             let hitRockIndex = rocks.findIndex(rock => newHead.x === rock.x && newHead.y === rock.y);
-            // Ghost / Dev Tool pass-through mechanic
             if (hitRockIndex !== -1 && (playerClass.ghost || isInvulnerable)) hitRockIndex = -1;
+
+            let hitSpawner = spawners.some(s => s.x === newHead.x && s.y === newHead.y);
 
             let hitSelf = snake.some(segment => newHead.x === segment.x && newHead.y === segment.y);
             if (hitSelf && isInvulnerable) hitSelf = false;
 
-            if (hitWall || hitSelf) { // hitWall is always false now, but left for structure
+            // Retrait de "hitEnemy" de cette liste : percuter un ennemi avec la tête ne blesse plus !
+            if (hitWall || hitSelf || hitSpawner) { 
                 if (!isInvulnerable) hp -= 1;
                 sfx.damage();
                 triggerDamageVisuals();
                 handleDamage(); return; 
             }
 
-            // Big Poison Apple (Insta-kill)
             if (bigSpoiledFood) {
                 if (newHead.x >= bigSpoiledFood.x && newHead.x <= bigSpoiledFood.x + 1 &&
                     newHead.y >= bigSpoiledFood.y && newHead.y <= bigSpoiledFood.y + 1) {
@@ -794,7 +984,6 @@
                 }
             }
 
-            // Rock eating logic
             if (hitRockIndex !== -1) {
                 rocks.splice(hitRockIndex, 1);
                 if (!isInvulnerable) hp -= 1;
@@ -827,9 +1016,17 @@
             const eatenFoodIndex = foods.findIndex(f => newHead.x === f.x && newHead.y === f.y);
             
             if (eatenFoodIndex !== -1) {
+                const eatenFood = foods[eatenFoodIndex];
+                const foodType = eatenFood.type || 'APPLE';
+                
+                let progressGain = 1;
+                let growthGain = 1;
+                if (foodType === 'BANANA') { progressGain = 2; growthGain = 2; }
+                else if (foodType === 'MELON') { progressGain = 3; growthGain = 3; }
+
                 foods.splice(eatenFoodIndex, 1);
                 gold += (foodValue * playerClass.goldMult);
-                foodEaten++;
+                foodEaten += progressGain;
                 sfx.eat();
                 
                 if (foodEaten >= FOOD_TO_ADVANCE()) {
@@ -837,18 +1034,30 @@
                 }
                 
                 if (foods.length === 0) {
-                    const spot = getEmptySpot(true, true, true, true, foods, 4);
-                    foods.push({ ...spot, nextMoveTime: Date.now() + getFoodMoveDelay() });
+                    const spot = getEmptySpot(true, true, true, true, [...foods, ...spawners], 4);
+                    foods.push({ ...spot, type: getRandomFoodType(), nextMoveTime: Date.now() + getFoodMoveDelay() });
                 }
                 
-                // Hydra mechanic
                 if (playerClass.id === 'HYDRA' && Math.random() < 0.25) {
-                    const spot = getEmptySpot(true, true, true, true, foods, 4);
-                    foods.push({ ...spot, nextMoveTime: Date.now() + getFoodMoveDelay() });
+                    const spot = getEmptySpot(true, true, true, true, [...foods, ...spawners], 4);
+                    foods.push({ ...spot, type: getRandomFoodType(), nextMoveTime: Date.now() + getFoodMoveDelay() });
                 }
                 
-                spawnSpoiledApples();
-                growthQueue += playerClass.growthPerFood;
+                growthQueue += (playerClass.growthPerFood * growthGain);
+            }
+
+            // Le joueur réussit à manger un Squelette Kamikaze !
+            const hitEnemyIndex = enemies.findIndex(e => e.x === newHead.x && e.y === newHead.y);
+            if (hitEnemyIndex !== -1) {
+                enemies.splice(hitEnemyIndex, 1);
+                gold += (foodValue * playerClass.goldMult);
+                foodEaten += 2; // Compte double pour la progression !
+                growthQueue += (playerClass.growthPerFood * 2); // Fait grandir 2 fois plus !
+                sfx.eat();
+                
+                if (foodEaten >= FOOD_TO_ADVANCE()) {
+                    triggerWinStage(); return;
+                }
             }
 
             if (growthQueue > 0) {
@@ -862,7 +1071,7 @@
             updateUIPanels();
         }
 
-        // --- 8. RENDER LOGIC ---
+        // --- 8. LOGIQUE RENDU VISUEL ---
         function drawCanvas() {
             ctx.fillStyle = '#0f172a';
             ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
@@ -889,6 +1098,22 @@
                 ctx.beginPath(); ctx.roundRect(r.x * CELL_SIZE + 1, r.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
             });
 
+            spawners.forEach(sp => {
+                ctx.fillStyle = '#1e1b4b';
+                ctx.beginPath(); ctx.roundRect(sp.x * CELL_SIZE + 1, sp.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
+                ctx.fillStyle = '#a855f7';
+                ctx.fillRect(sp.x * CELL_SIZE + 6, sp.y * CELL_SIZE + 6, 8, 8);
+            });
+
+            enemies.forEach(e => {
+                ctx.fillStyle = '#f8fafc'; 
+                ctx.beginPath(); ctx.roundRect(e.x * CELL_SIZE + 2, e.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4, 4); ctx.fill();
+                ctx.fillStyle = '#0f172a'; 
+                ctx.fillRect(e.x * CELL_SIZE + 5, e.y * CELL_SIZE + 6, 3, 3);
+                ctx.fillRect(e.x * CELL_SIZE + 12, e.y * CELL_SIZE + 6, 3, 3);
+                ctx.fillRect(e.x * CELL_SIZE + 7, e.y * CELL_SIZE + 13, 6, 2); 
+            });
+
             ctx.fillStyle = '#84cc16';
             spoiledFoods.forEach(sp => {
                 ctx.beginPath(); ctx.arc(sp.x * CELL_SIZE + CELL_SIZE/2, sp.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
@@ -911,9 +1136,33 @@
                 ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE + 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
             }
 
-            ctx.fillStyle = '#ef4444'; 
             foods.forEach(f => {
-                ctx.beginPath(); ctx.arc(f.x * CELL_SIZE + CELL_SIZE/2, f.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
+                const cx = f.x * CELL_SIZE + CELL_SIZE / 2;
+                const cy = f.y * CELL_SIZE + CELL_SIZE / 2;
+                
+                if (f.type === 'BANANA') {
+                    ctx.fillStyle = '#facc15'; // Jaune
+                    ctx.beginPath(); 
+                    ctx.ellipse(cx, cy, CELL_SIZE/2 - 2, CELL_SIZE/4, Math.PI / 4, 0, Math.PI * 2); 
+                    ctx.fill();
+                } else if (f.type === 'MELON') {
+                    ctx.fillStyle = '#4ade80'; // Vert clair
+                    ctx.beginPath(); 
+                    ctx.arc(cx, cy, CELL_SIZE/2 - 1, 0, Math.PI * 2); 
+                    ctx.fill();
+                    // Rayures du melon
+                    ctx.fillStyle = '#166534'; 
+                    ctx.fillRect(cx - 3, cy - 6, 2, 12);
+                    ctx.fillRect(cx + 1, cy - 6, 2, 12);
+                } else {
+                    // Pomme standard
+                    ctx.fillStyle = '#ef4444'; 
+                    ctx.beginPath(); 
+                    ctx.arc(cx, cy, CELL_SIZE/2 - 2, 0, Math.PI * 2); 
+                    ctx.fill();
+                    ctx.fillStyle = '#14532d'; 
+                    ctx.fillRect(f.x * CELL_SIZE + CELL_SIZE/2 - 1, f.y * CELL_SIZE + 2, 2, 4);
+                }
             });
 
             const timeSinceDamage = Date.now() - lastDamageTime;
@@ -929,7 +1178,7 @@
             }
         }
 
-        // --- 9. STATE TRANSITIONS ---
+        // --- 9. TRANSITIONS D'ÉTAT ---
         function triggerDamageVisuals() {
             lastDamageTime = Date.now();
             const cvs = document.getElementById('gameCanvas');
@@ -940,16 +1189,16 @@
         function handleDamage() {
             if (hp <= 0) {
                 setGameState('GAMEOVER');
-                document.getElementById('gameOverText').innerText = `You succumbed during Stage ${stage}.`;
+                document.getElementById('gameOverText').innerText = `Vous avez succombé au Niveau ${stage}.`;
                 
                 const submitText = document.getElementById('scoreSubmitText');
                 submitText.classList.remove('hidden');
-                submitText.innerText = "Uploading score...";
+                submitText.innerText = "Envoi du score...";
                 submitText.className = "text-amber-400 font-bold text-sm mb-8 bg-amber-950/50 px-4 py-2 rounded-lg border border-amber-900";
                 
                 if (window.dbPushScore) {
                     window.dbPushScore(currentProfileName, stage).then(() => {
-                        submitText.innerText = "Score securely saved to global network.";
+                        submitText.innerText = "Score sauvegardé sur le réseau mondial.";
                         submitText.className = "text-emerald-400 font-bold text-sm mb-8 bg-emerald-950/50 px-4 py-2 rounded-lg border border-emerald-900";
                     });
                 }
@@ -962,7 +1211,7 @@
 
         function showPauseOverlay(type) {
             clearInterval(gameLoopRef);
-            clearInterval(foodTickIntervalRef);
+            clearInterval(tickIntervalRef);
             isWaitingForInput = true;
             
             const box = document.getElementById('pauseOverlayBox');
@@ -972,13 +1221,13 @@
             if (type === 'DAMAGE') {
                 box.className = 'bg-slate-900/90 border border-red-500/50 p-5 rounded-2xl shadow-[0_0_30px_rgba(239,68,68,0.2)] backdrop-blur-sm pointer-events-auto mb-4 transition-colors';
                 title.className = 'text-2xl font-black text-red-400 mb-1';
-                title.innerText = 'OUCH!';
-                subtitle.innerText = 'Arena shifted. Plan your escape.';
+                title.innerText = 'AÏE !';
+                subtitle.innerText = 'L\'arène a changé. Planifiez votre fuite.';
             } else if (type === 'START') {
                 box.className = 'bg-slate-900/90 border border-emerald-500/50 p-5 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.2)] backdrop-blur-sm pointer-events-auto mb-4 transition-colors';
                 title.className = 'text-2xl font-black text-emerald-400 mb-1';
-                title.innerText = `STAGE ${stage}`;
-                subtitle.innerText = 'Plan your opening move.';
+                title.innerText = `NIVEAU ${stage}`;
+                subtitle.innerText = 'Préparez votre premier mouvement.';
             }
             
             document.getElementById('pauseOverlay').classList.remove('hidden');
@@ -989,16 +1238,12 @@
             setGameState('SHOP');
             stage += 1;
             
-            if (stage % 2 === 0) {
-                const maxLevels = { MOVING_FOOD: 10, ROCKS: 10, ICE_PATCHES: 10, SPOILED_APPLES: 10 };
-                const availableTypes = Object.keys(MODIFIER_TYPES).filter(key => (activeModifiers[key] || 0) < maxLevels[key]);
-                if (availableTypes.length > 0) {
-                    const chosenId = availableTypes[Math.floor(Math.random() * availableTypes.length)];
-                    activeModifiers[chosenId] = (activeModifiers[chosenId] || 0) + 1;
-                    lastModifierEvent = { id: chosenId, level: activeModifiers[chosenId] };
-                } else {
-                    lastModifierEvent = null;
-                }
+            const maxLevels = { MOVING_FOOD: 10, ROCKS: 10, ICE_PATCHES: 10, SPOILED_APPLES: 10, SKELETON_SPAWNER: 10 };
+            const availableTypes = Object.keys(MODIFIER_TYPES).filter(key => (activeModifiers[key] || 0) < maxLevels[key]);
+            if (availableTypes.length > 0) {
+                const chosenId = availableTypes[Math.floor(Math.random() * availableTypes.length)];
+                activeModifiers[chosenId] = (activeModifiers[chosenId] || 0) + 1;
+                lastModifierEvent = { id: chosenId, level: activeModifiers[chosenId] };
             } else {
                 lastModifierEvent = null;
             }
@@ -1016,10 +1261,10 @@
             
             document.getElementById('classSelectGrid').innerHTML = selected.map(cls => {
                 let extras = '';
-                if(cls.ghost) extras += '<span class="text-xs text-purple-400 mt-2 font-semibold block">+ Passes through rocks</span>';
-                if(cls.goldMult > 1) extras += `<span class="text-xs text-amber-400 mt-2 font-semibold block">+ x${cls.goldMult} Gold Drops</span>`;
-                if(cls.id === 'MERCHANT') extras += '<span class="text-xs text-amber-500 mt-2 font-semibold block">+ 20% Shop Discount</span>';
-                if(cls.growthPerFood > 1) extras += `<span class="text-xs text-red-400 mt-1 font-semibold block">- Grows +${cls.growthPerFood} per food</span>`;
+                if(cls.ghost) extras += '<span class="text-xs text-purple-400 mt-2 font-semibold block">+ Traverse les rochers</span>';
+                if(cls.goldMult > 1) extras += `<span class="text-xs text-amber-400 mt-2 font-semibold block">+ x${cls.goldMult} Or Obtenu</span>`;
+                if(cls.id === 'MERCHANT') extras += '<span class="text-xs text-amber-500 mt-2 font-semibold block">+ 20% Réduction Boutique</span>';
+                if(cls.growthPerFood > 1) extras += `<span class="text-xs text-red-400 mt-1 font-semibold block">- Grandit +${cls.growthPerFood} par nourriture</span>`;
                 
                 return `
                 <button onclick="startGameWithClass('${cls.id}')" class="flex flex-col text-left p-4 rounded-xl border border-slate-700 bg-slate-800 hover:border-green-500 hover:bg-slate-800/80 transition-all group">
@@ -1046,15 +1291,21 @@
             gold = playerClass.id === 'MERCHANT' ? 50 : 0;
             foodValue = 1; speed = playerClass.baseSpeed; stage = 1; foodEaten = 0;
             
-            // Check cheat toggle!
-            activeModifiers = forceMaxModifiers ? { ROCKS: 10, SPOILED_APPLES: 10, MOVING_FOOD: 10, ICE_PATCHES: 10 } : {};
+            // Appliquer individuellement les modificateurs forcés
+            activeModifiers = {};
+            for (const mod in forcedMaxMods) {
+                if (forcedMaxMods[mod]) {
+                    activeModifiers[mod] = 10;
+                }
+            }
             lastModifierEvent = null;
             
             potionPurchases = 0; heartPurchases = 0; applePurchases = 0;
             
             rocks = []; ice = []; spoiledFoods = []; bigSpoiledFood = null;
+            spawners = []; enemies = [];
             snake = [...INITIAL_SNAKE]; dir = {...INITIAL_DIR}; lastProcessedDir = {...INITIAL_DIR}; growthQueue = 0;
-            foods = [{x: 5, y: 5}];
+            foods = [{x: 5, y: 5, type: 'APPLE'}];
             
             setGameState('PLAYING');
             startNextStage();
@@ -1068,11 +1319,11 @@
 
         function quitToMenu() {
             clearInterval(gameLoopRef);
-            clearInterval(foodTickIntervalRef);
+            clearInterval(tickIntervalRef);
             setGameState('MENU');
         }
 
-        // --- 10. DOM & UI UPDATES ---
+        // --- 10. MAJ DOM & UI ---
         function setGameState(newState) {
             gameState = newState;
             document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
@@ -1110,7 +1361,6 @@
             document.getElementById('uiProgressBar').style.width = `${(foodEaten / FOOD_TO_ADVANCE()) * 100}%`;
 
             const cvs = document.getElementById('gameCanvas');
-            // Give all classes a dashed border to imply open walls
             cvs.style.border = '4px dashed #475569';
             if (playerClass.ghost) {
                 cvs.style.borderColor = 'rgba(168, 85, 247, 0.8)';
@@ -1125,7 +1375,7 @@
                     <div class="bg-slate-950 border border-red-900/30 p-3 rounded-xl flex items-center gap-3">
                         <div class="relative">
                             <i data-lucide="${m.icon}" class="${m.color} w-6 h-6"></i>
-                            <span class="absolute -bottom-2 -right-2 bg-slate-800 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full border border-slate-600">Lv.${level}</span>
+                            <span class="absolute -bottom-2 -right-2 bg-slate-800 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full border border-slate-600">Niv.${level}</span>
                         </div>
                         <span class="font-bold text-slate-200 text-sm">${m.name}</span>
                     </div>`;
@@ -1153,22 +1403,22 @@
             const escBox = document.getElementById('shopEscalation');
             if (lastModifierEvent) {
                 escBox.classList.remove('hidden');
-                document.getElementById('shopEscalationText').innerHTML = `${MODIFIER_TYPES[lastModifierEvent.id].name} reached <span class="font-bold text-white">Level ${lastModifierEvent.level}</span>.<br/>${MODIFIER_TYPES[lastModifierEvent.id].desc}`;
+                document.getElementById('shopEscalationText').innerHTML = `${MODIFIER_TYPES[lastModifierEvent.id].name} atteint le <span class="font-bold text-white">Niveau ${lastModifierEvent.level}</span>.<br/>${MODIFIER_TYPES[lastModifierEvent.id].desc}`;
             } else {
                 escBox.classList.add('hidden');
             }
-            document.getElementById('shopSubtitle').innerText = `Stage ${stage - 1} Cleared! Prepare for the next challenge.`;
-            document.getElementById('btnEnterStage').innerText = `Enter Stage ${stage}`;
+            document.getElementById('shopSubtitle').innerText = `Niveau ${stage - 1} Terminé ! Préparez-vous pour le suivant.`;
+            document.getElementById('btnEnterStage').innerText = `Entrer Niveau ${stage}`;
 
             const potionCostBase = 10 * Math.pow(2, potionPurchases);
             const heartCostBase = 50 * Math.pow(2, heartPurchases);
             const appleCostBase = 30 * Math.pow(2, applePurchases);
 
             const items = [
-                { icon: 'heart', title: 'Health Potion', desc: 'Restore 1 HP instantly', baseCost: potionCostBase, cond: hp < maxHp },
-                { icon: 'shield', title: 'Heart Container', desc: 'Max HP +1 & Restore 1 HP', baseCost: heartCostBase, cond: true },
-                { icon: 'coins', title: 'Golden Apples', desc: 'Food yields more gold', baseCost: appleCostBase, cond: true },
-                { icon: 'zap', title: 'Time Dilation', desc: 'Slightly slows snake speed', baseCost: 60, cond: speed < 180 }
+                { icon: 'heart', title: 'Potion de Santé', desc: 'Restaure 1 PV instantanément', baseCost: potionCostBase, cond: hp < maxHp },
+                { icon: 'shield', title: 'Réceptacle de Cœur', desc: 'PV Max +1 & Restaure 1 PV', baseCost: heartCostBase, cond: true },
+                { icon: 'coins', title: 'Pommes Dorées', desc: 'La nourriture rapporte plus d\'or', baseCost: appleCostBase, cond: true },
+                { icon: 'zap', title: 'Dilatation Temporelle', desc: 'Ralentit légèrement le serpent', baseCost: 60, cond: speed < 180 }
             ];
 
             document.getElementById('shopItemsGrid').innerHTML = items.map((item, idx) => {
@@ -1202,23 +1452,24 @@
             renderShop(); 
         }
 
-        // --- 11. INPUT LISTENERS ---
+        // --- 11. ÉCOUTEURS D'ENTRÉE ---
         window.addEventListener('keydown', e => {
             initAudio();
             if (gameState !== 'PLAYING') return;
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd'].includes(e.key)) e.preventDefault();
+            // Ajout du support AZERTY
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'z', 'q'].includes(e.key.toLowerCase())) e.preventDefault();
             
             if (isWaitingForInput) {
                 let parsedDir = null;
-                switch(e.key) {
-                    case 'ArrowUp': case 'w': parsedDir = {x: 0, y: -1}; break;
-                    case 'ArrowDown': case 's': parsedDir = {x: 0, y: 1}; break;
-                    case 'ArrowLeft': case 'a': parsedDir = {x: -1, y: 0}; break;
-                    case 'ArrowRight': case 'd': parsedDir = {x: 1, y: 0}; break;
+                switch(e.key.toLowerCase()) {
+                    case 'arrowup': case 'w': case 'z': parsedDir = {x: 0, y: -1}; break;
+                    case 'arrowdown': case 's': parsedDir = {x: 0, y: 1}; break;
+                    case 'arrowleft': case 'a': case 'q': parsedDir = {x: -1, y: 0}; break;
+                    case 'arrowright': case 'd': parsedDir = {x: 1, y: 0}; break;
                 }
                 
                 if (parsedDir) {
-                    if (parsedDir.x === 0 && parsedDir.y === 1) return; // Prevent down movement on start
+                    if (parsedDir.x === 0 && parsedDir.y === 1) return; 
                     
                     isWaitingForInput = false;
                     document.getElementById('pauseOverlay').classList.add('hidden');
@@ -1234,11 +1485,11 @@
             }
 
             const currentDir = lastProcessedDir;
-            switch(e.key) {
-                case 'ArrowUp': case 'w': if (currentDir.y === 0) dir = {x: 0, y: -1}; break;
-                case 'ArrowDown': case 's': if (currentDir.y === 0) dir = {x: 0, y: 1}; break;
-                case 'ArrowLeft': case 'a': if (currentDir.x === 0) dir = {x: -1, y: 0}; break;
-                case 'ArrowRight': case 'd': if (currentDir.x === 0) dir = {x: 1, y: 0}; break;
+            switch(e.key.toLowerCase()) {
+                case 'arrowup': case 'w': case 'z': if (currentDir.y === 0) dir = {x: 0, y: -1}; break;
+                case 'arrowdown': case 's': if (currentDir.y === 0) dir = {x: 0, y: 1}; break;
+                case 'arrowleft': case 'a': case 'q': if (currentDir.x === 0) dir = {x: -1, y: 0}; break;
+                case 'arrowright': case 'd': if (currentDir.x === 0) dir = {x: 1, y: 0}; break;
             }
         });
 
