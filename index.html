@@ -18,6 +18,11 @@
 </head>
 <body class="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4 font-sans">
     
+    <div id="loadingOverlay" class="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center transition-opacity duration-500">
+        <i data-lucide="loader-2" class="w-12 h-12 text-emerald-500 animate-spin mb-4"></i>
+        <h2 class="text-xl font-bold text-slate-300 tracking-widest">CHARGEMENT DES ASSETS...</h2>
+    </div>
+
     <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         <!-- PANNEAU GAUCHE - JEU ET MENUS -->
@@ -278,7 +283,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, push, query, orderByChild, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        const firebaseConfig = {
+       const firebaseConfig = {
             apiKey: "AIzaSyC76d3JvCvvjmKBmgsgJGWOb5ia5Uuk5s8",
             authDomain: "snaek-roguelikte.firebaseapp.com",
             projectId: "snaek-roguelikte",
@@ -340,6 +345,65 @@
     </script>
 
     <script>
+        // === SYSTÈME DE PRÉCHARGEMENT DES ASSETS (MÉTHODE 3) ===
+        const ASSETS = {};
+        
+        // C'est ici que vous définissez le chemin vers vos images sur GitHub
+        const IMAGES_TO_LOAD = {
+            apple: 'assets/apple.png',
+            banana: 'assets/banana.png',
+            melon: 'assets/melon.png',
+            spoiled_apple: 'assets/poisonapple.png', // Changé ici !
+            big_spoiled_apple: 'assets/big_spoiled_apple.png',
+            rock: 'assets/rock.png',
+            ice: 'assets/ice.png',
+            spawner: 'assets/spawner.png',
+            skeleton: 'assets/skeleton.png',
+            snake_head: 'assets/snake_head.png',
+            snake_body: 'assets/snake_body.png',
+            snake_head_ghost: 'assets/snake_head_ghost.png',
+            snake_body_ghost: 'assets/snake_body_ghost.png'
+        };
+
+        let assetsLoaded = false;
+
+        function preloadAssets(onComplete) {
+            let loadedCount = 0;
+            const totalCount = Object.keys(IMAGES_TO_LOAD).length;
+            
+            if (totalCount === 0) {
+                assetsLoaded = true;
+                onComplete();
+                return;
+            }
+
+            for (let key in IMAGES_TO_LOAD) {
+                let img = new Image();
+                
+                img.onload = () => {
+                    ASSETS[key] = img;
+                    loadedCount++;
+                    if (loadedCount === totalCount) {
+                        assetsLoaded = true;
+                        onComplete();
+                    }
+                };
+                
+                // Fallback silencieux si l'image n'existe pas encore sur le GitHub
+                img.onerror = () => {
+                    ASSETS[key] = null; 
+                    loadedCount++;
+                    if (loadedCount === totalCount) {
+                        assetsLoaded = true;
+                        onComplete();
+                    }
+                };
+                
+                img.src = IMAGES_TO_LOAD[key];
+            }
+        }
+
+
         // --- 0. OUTILS DEV & PARAMÈTRES ---
         let isInvulnerable = false;
         let forcedMaxMods = { ROCKS: false, SPOILED_APPLES: false, MOVING_FOOD: false, ICE_PATCHES: false, SKELETON_SPAWNER: false };
@@ -499,7 +563,7 @@
         const RARE_RELICS = {
             IRON_STOMACH: { id: 'IRON_STOMACH', name: 'Estomac de Fer', desc: 'Mangez 1 Pomme Pourrie par niveau pour gagner de la Progression.', icon: 'shield-alert', colorClass: 'text-emerald-300' },
             BONE_PACT: { id: 'BONE_PACT', name: 'Pacte d\'Ossements', desc: 'Manger des squelettes augmente vos PV (2) puis soigne (4).', icon: 'skull', colorClass: 'text-zinc-100' },
-            STONE_SCALE: { id: 'STONE_SCALE', name: 'Écaille de Pierre', desc: 'Le 1er impact sur un mur/rocher crée une explosion protectrice.', icon: 'hexagon', colorClass: 'text-stone-400' }
+            STONE_SCALE: { id: 'STONE_SCALE', name: 'Écaille de Pierre', desc: 'Le 1er impact sur un rocher crée une explosion protectrice.', icon: 'hexagon', colorClass: 'text-stone-400' }
         };
 
         const ALL_RELICS = { ...COMMON_RELICS, ...UNCOMMON_RELICS, ...RARE_RELICS };
@@ -915,6 +979,7 @@
             const newHead = { x: head.x + currentDir.x, y: head.y + currentDir.y };
             let hitWall = newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE;
             
+            // On peut tous passer à travers les murs (wrap)
             if (hitWall) {
                 newHead.x = (newHead.x + GRID_SIZE) % GRID_SIZE;
                 newHead.y = (newHead.y + GRID_SIZE) % GRID_SIZE;
@@ -929,18 +994,12 @@
             if (hitSelf && isInvulnerable) hitSelf = false;
 
             // --- RELIQUE RARE : ÉCAILLE DE PIERRE ---
-            if ((hitWall || hitRockIndex !== -1) && activeRunRelics.includes('STONE_SCALE') && !stoneScaleUsedThisStage) {
+            // N'est déclenché que par les rochers, vu que les murs externes wrapent !
+            if (hitRockIndex !== -1 && activeRunRelics.includes('STONE_SCALE') && !stoneScaleUsedThisStage) {
                 stoneScaleUsedThisStage = true;
-                hitWall = false; // Sauve le joueur de la collision avec le mur
                 
-                if (hitRockIndex !== -1) {
-                    rocks.splice(hitRockIndex, 1);
-                    hitRockIndex = -1; // Sauve de la collision du rocher
-                } else {
-                    // Si c'est un mur, on bloque la tête à son ancienne position pour ne pas sortir de l'écran
-                    newHead.x = head.x;
-                    newHead.y = head.y;
-                }
+                rocks.splice(hitRockIndex, 1);
+                hitRockIndex = -1; 
 
                 // Explosion de zone 3x3
                 const br = [
@@ -977,7 +1036,7 @@
                 updateUIPanels();
             }
 
-            if (hitWall || hitSelf || hitSpawner) { 
+            if (hitSelf || hitSpawner) { 
                 if (!isInvulnerable) hp -= 1;
                 sfx.damage();
                 triggerDamageVisuals();
@@ -1120,73 +1179,110 @@
             }
 
             ctx.fillStyle = 'rgba(165, 243, 252, 0.2)'; 
-            ice.forEach(i => ctx.fillRect(i.x * CELL_SIZE, i.y * CELL_SIZE, CELL_SIZE, CELL_SIZE));
+            ice.forEach(i => {
+                if (ASSETS.ice) {
+                    ctx.drawImage(ASSETS.ice, i.x * CELL_SIZE, i.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                } else {
+                    ctx.fillRect(i.x * CELL_SIZE, i.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                }
+            });
             ctx.strokeStyle = 'rgba(165, 243, 252, 0.4)'; ctx.lineWidth = 2;
             ice.forEach(i => {
-                ctx.beginPath();
-                ctx.moveTo(i.x * CELL_SIZE + 4, i.y * CELL_SIZE + CELL_SIZE - 4);
-                ctx.lineTo(i.x * CELL_SIZE + CELL_SIZE - 4, i.y * CELL_SIZE + 4);
-                ctx.stroke();
+                if (!ASSETS.ice) {
+                    ctx.beginPath();
+                    ctx.moveTo(i.x * CELL_SIZE + 4, i.y * CELL_SIZE + CELL_SIZE - 4);
+                    ctx.lineTo(i.x * CELL_SIZE + CELL_SIZE - 4, i.y * CELL_SIZE + 4);
+                    ctx.stroke();
+                }
             });
 
             ctx.fillStyle = '#475569'; 
             rocks.forEach(r => {
-                ctx.beginPath(); ctx.roundRect(r.x * CELL_SIZE + 1, r.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
+                if (ASSETS.rock) {
+                    ctx.drawImage(ASSETS.rock, r.x * CELL_SIZE, r.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                } else {
+                    ctx.beginPath(); ctx.roundRect(r.x * CELL_SIZE + 1, r.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
+                }
             });
 
             spawners.forEach(sp => {
-                ctx.fillStyle = '#1e1b4b';
-                ctx.beginPath(); ctx.roundRect(sp.x * CELL_SIZE + 1, sp.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
-                ctx.fillStyle = '#a855f7';
-                ctx.fillRect(sp.x * CELL_SIZE + 6, sp.y * CELL_SIZE + 6, 8, 8);
+                if (ASSETS.spawner) {
+                    ctx.drawImage(ASSETS.spawner, sp.x * CELL_SIZE, sp.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                } else {
+                    ctx.fillStyle = '#1e1b4b';
+                    ctx.beginPath(); ctx.roundRect(sp.x * CELL_SIZE + 1, sp.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
+                    ctx.fillStyle = '#a855f7';
+                    ctx.fillRect(sp.x * CELL_SIZE + 6, sp.y * CELL_SIZE + 6, 8, 8);
+                }
             });
 
             enemies.forEach(e => {
-                ctx.fillStyle = '#f8fafc'; 
-                ctx.beginPath(); ctx.roundRect(e.x * CELL_SIZE + 2, e.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4, 4); ctx.fill();
-                ctx.fillStyle = '#0f172a'; 
-                ctx.fillRect(e.x * CELL_SIZE + 5, e.y * CELL_SIZE + 6, 3, 3);
-                ctx.fillRect(e.x * CELL_SIZE + 12, e.y * CELL_SIZE + 6, 3, 3);
-                ctx.fillRect(e.x * CELL_SIZE + 7, e.y * CELL_SIZE + 13, 6, 2); 
+                if (ASSETS.skeleton) {
+                    ctx.drawImage(ASSETS.skeleton, e.x * CELL_SIZE, e.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                } else {
+                    ctx.fillStyle = '#f8fafc'; 
+                    ctx.beginPath(); ctx.roundRect(e.x * CELL_SIZE + 2, e.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4, 4); ctx.fill();
+                    ctx.fillStyle = '#0f172a'; 
+                    ctx.fillRect(e.x * CELL_SIZE + 5, e.y * CELL_SIZE + 6, 3, 3);
+                    ctx.fillRect(e.x * CELL_SIZE + 12, e.y * CELL_SIZE + 6, 3, 3);
+                    ctx.fillRect(e.x * CELL_SIZE + 7, e.y * CELL_SIZE + 13, 6, 2); 
+                }
             });
 
             ctx.fillStyle = '#84cc16';
             spoiledFoods.forEach(sp => {
-                ctx.beginPath(); ctx.arc(sp.x * CELL_SIZE + CELL_SIZE/2, sp.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
-                ctx.fillStyle = '#14532d'; 
-                ctx.fillRect(sp.x * CELL_SIZE + CELL_SIZE/2 - 1, sp.y * CELL_SIZE + 2, 2, 4);
-                ctx.fillStyle = '#84cc16'; 
+                if (ASSETS.spoiled_apple) {
+                    ctx.drawImage(ASSETS.spoiled_apple, sp.x * CELL_SIZE, sp.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                } else {
+                    ctx.beginPath(); ctx.arc(sp.x * CELL_SIZE + CELL_SIZE/2, sp.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
+                    ctx.fillStyle = '#14532d'; 
+                    ctx.fillRect(sp.x * CELL_SIZE + CELL_SIZE/2 - 1, sp.y * CELL_SIZE + 2, 2, 4);
+                    ctx.fillStyle = '#84cc16'; 
+                }
             });
 
             if (bigSpoiledFood) {
-                ctx.fillStyle = '#84cc16';
-                ctx.beginPath();
-                ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE, CELL_SIZE - 4, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = '#14532d'; 
-                ctx.fillRect(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE - 4, bigSpoiledFood.y * CELL_SIZE + 4, 8, 6);
-                ctx.fillStyle = '#1a2e05';
-                ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE - 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
-                ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE + 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
+                if (ASSETS.big_spoiled_apple) {
+                    ctx.drawImage(ASSETS.big_spoiled_apple, bigSpoiledFood.x * CELL_SIZE, bigSpoiledFood.y * CELL_SIZE, CELL_SIZE * 2, CELL_SIZE * 2);
+                } else {
+                    ctx.fillStyle = '#84cc16';
+                    ctx.beginPath();
+                    ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE, CELL_SIZE - 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#14532d'; 
+                    ctx.fillRect(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE - 4, bigSpoiledFood.y * CELL_SIZE + 4, 8, 6);
+                    ctx.fillStyle = '#1a2e05';
+                    ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE - 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE + 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
+                }
             }
 
             foods.forEach(f => {
-                const cx = f.x * CELL_SIZE + CELL_SIZE / 2;
-                const cy = f.y * CELL_SIZE + CELL_SIZE / 2;
-                
-                if (f.type === 'BANANA') {
-                    ctx.fillStyle = '#facc15';
-                    ctx.beginPath(); ctx.ellipse(cx, cy, CELL_SIZE/2 - 2, CELL_SIZE/4, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
-                } else if (f.type === 'MELON') {
-                    ctx.fillStyle = '#4ade80';
-                    ctx.beginPath(); ctx.arc(cx, cy, CELL_SIZE/2 - 1, 0, Math.PI * 2); ctx.fill();
-                    ctx.fillStyle = '#166534'; 
-                    ctx.fillRect(cx - 3, cy - 6, 2, 12); ctx.fillRect(cx + 1, cy - 6, 2, 12);
+                let img = null;
+                if (f.type === 'BANANA') img = ASSETS.banana;
+                else if (f.type === 'MELON') img = ASSETS.melon;
+                else img = ASSETS.apple;
+
+                if (img) {
+                    ctx.drawImage(img, f.x * CELL_SIZE, f.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 } else {
-                    ctx.fillStyle = '#ef4444'; 
-                    ctx.beginPath(); ctx.arc(cx, cy, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
-                    ctx.fillStyle = '#14532d'; 
-                    ctx.fillRect(f.x * CELL_SIZE + CELL_SIZE/2 - 1, f.y * CELL_SIZE + 2, 2, 4);
+                    const cx = f.x * CELL_SIZE + CELL_SIZE / 2;
+                    const cy = f.y * CELL_SIZE + CELL_SIZE / 2;
+                    
+                    if (f.type === 'BANANA') {
+                        ctx.fillStyle = '#facc15';
+                        ctx.beginPath(); ctx.ellipse(cx, cy, CELL_SIZE/2 - 2, CELL_SIZE/4, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
+                    } else if (f.type === 'MELON') {
+                        ctx.fillStyle = '#4ade80';
+                        ctx.beginPath(); ctx.arc(cx, cy, CELL_SIZE/2 - 1, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = '#166534'; 
+                        ctx.fillRect(cx - 3, cy - 6, 2, 12); ctx.fillRect(cx + 1, cy - 6, 2, 12);
+                    } else {
+                        ctx.fillStyle = '#ef4444'; 
+                        ctx.beginPath(); ctx.arc(cx, cy, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = '#14532d'; 
+                        ctx.fillRect(f.x * CELL_SIZE + CELL_SIZE/2 - 1, f.y * CELL_SIZE + 2, 2, 4);
+                    }
                 }
             });
 
@@ -1195,10 +1291,21 @@
 
             if (!isBlinking) {
                 snake.forEach((segment, index) => {
-                    const headColor = playerRelic.ghost ? '#a855f7' : '#16a34a';
-                    const bodyColor = playerRelic.ghost ? '#c084fc' : '#22c55e';
-                    ctx.fillStyle = index === 0 ? headColor : bodyColor; 
-                    ctx.beginPath(); ctx.roundRect(segment.x * CELL_SIZE + 1, segment.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
+                    const isHead = index === 0;
+                    const isGhost = playerRelic.ghost;
+                    
+                    let img = null;
+                    if (isHead) img = isGhost ? ASSETS.snake_head_ghost : ASSETS.snake_head;
+                    else img = isGhost ? ASSETS.snake_body_ghost : ASSETS.snake_body;
+
+                    if (img) {
+                        ctx.drawImage(img, segment.x * CELL_SIZE, segment.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                    } else {
+                        const headColor = isGhost ? '#a855f7' : '#16a34a';
+                        const bodyColor = isGhost ? '#c084fc' : '#22c55e';
+                        ctx.fillStyle = isHead ? headColor : bodyColor; 
+                        ctx.beginPath(); ctx.roundRect(segment.x * CELL_SIZE + 1, segment.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
+                    }
                 });
             }
         }
@@ -1588,8 +1695,16 @@
             if (newDir.x !== 0 && currentDir.x === 0) dir = newDir;
         }
 
-        lucide.createIcons();
-        initProfile();
+        // Lancement au chargement de la page avec préchargement des images !
+        window.onload = () => {
+            preloadAssets(() => {
+                document.getElementById('loadingOverlay').classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => document.getElementById('loadingOverlay').classList.add('hidden'), 500);
+                
+                lucide.createIcons();
+                initProfile();
+            });
+        };
     </script>
 </body>
 </html>
