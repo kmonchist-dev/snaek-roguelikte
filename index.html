@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Snake Lite</title>
+    <title>Snaek : The Roguelike</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -51,7 +51,7 @@
                 </button>
                 
                 <div class="bg-slate-800/90 p-8 rounded-3xl border border-slate-700 text-center w-full max-w-md shadow-2xl relative">
-                    <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">SNAKE LITE</h1>
+                    <h1 class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-600 mb-2">SNAEK</h1>
                     <p class="text-slate-400 mb-6 font-medium">Bon retour, <span id="menuPlayerName" class="text-emerald-400 font-bold"></span></p>
                     
                     <button onclick="handleStartRun()" class="w-full py-4 bg-green-500 hover:bg-green-400 text-slate-950 rounded-xl font-black text-xl transition-transform hover:scale-[1.02] shadow-[0_0_20px_rgba(34,197,94,0.4)] mb-4">DÉMARRER</button>
@@ -61,7 +61,7 @@
 
             <!-- ÉCRAN OUTILS DEV / PARAMÈTRES -->
             <div id="screen-SETTINGS" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-6 text-center hidden">
-                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 w-full max-w-md relative shadow-2xl">
+                <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 w-full max-w-md relative shadow-2xl overflow-y-auto max-h-[90vh]">
                     <button onclick="closeSettings()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
                         <i data-lucide="x" class="w-6 h-6"></i>
                     </button>
@@ -80,6 +80,39 @@
                             Mode Dieu (Invulnérable)
                         </label>
                         
+                        <div>
+                            <div class="text-sm font-bold text-amber-400 uppercase tracking-wider mb-3">Forcer Reliques (Test)</div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <!-- Communes -->
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-amber-500 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificRelic('BEEF_HEART', this.checked)" class="w-4 h-4 accent-amber-500"> Cœur de Bœuf
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-amber-500 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificRelic('SOFT_TIE', this.checked)" class="w-4 h-4 accent-amber-500"> Tié Mou
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-amber-500 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificRelic('EARTHWORM', this.checked)" class="w-4 h-4 accent-amber-500"> Ver de terre
+                                </label>
+                                <!-- Inhabituelles -->
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-cyan-400 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificRelic('SPIKED_BOOTS', this.checked)" class="w-4 h-4 accent-cyan-400"> B. Crampons
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-cyan-400 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificRelic('FAST_METABOLISM', this.checked)" class="w-4 h-4 accent-cyan-400"> Méta. Rapide
+                                </label>
+                                <!-- Rares -->
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-yellow-400 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificRelic('IRON_STOMACH', this.checked)" class="w-4 h-4 accent-yellow-400"> Esto. de Fer
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-yellow-400 transition-colors text-sm">
+                                    <input type="checkbox" onchange="toggleSpecificRelic('BONE_PACT', this.checked)" class="w-4 h-4 accent-yellow-400"> Pacte d'Os
+                                </label>
+                                <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-yellow-400 transition-colors text-sm sm:col-span-2">
+                                    <input type="checkbox" onchange="toggleSpecificRelic('STONE_SCALE', this.checked)" class="w-4 h-4 accent-yellow-400"> Écaille de Pierre
+                                </label>
+                            </div>
+                        </div>
+
                         <div>
                             <div class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3">Forcer Modificateurs (Niv. 10)</div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -126,28 +159,44 @@
                 <button onclick="toggleLeaderboard()" class="mt-6 text-slate-400 hover:text-white transition-colors font-bold flex items-center gap-2"><i data-lucide="arrow-left" class="w-4 h-4"></i> Retour au Menu</button>
             </div>
 
-            <!-- ÉCRAN SÉLECTION CLASSE -->
+            <!-- ÉCRAN SÉLECTION RELIQUE DE DÉPART -->
             <div id="screen-CLASS_SELECT" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col p-6 overflow-y-auto items-center hidden">
-                <h2 class="text-3xl font-black text-white mb-6 mt-4">CHOISISSEZ VOTRE SERPENT</h2>
+                <h2 class="text-3xl font-black text-white mb-6 mt-4 text-center">CHOISISSEZ VOTRE ORIGINE</h2>
                 <div id="classSelectGrid" class="flex flex-col gap-4 w-full max-w-md"></div>
                 <button onclick="quitToMenu()" class="mt-6 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold px-4 py-2"><i data-lucide="arrow-left" class="w-5 h-5"></i> Retour au Menu</button>
             </div>
 
-            <!-- ÉCRAN BOUTIQUE -->
-            <div id="screen-SHOP" class="absolute inset-0 bg-slate-900/95 z-10 flex flex-col p-6 md:p-10 overflow-y-auto hidden">
-                <h2 class="text-3xl font-black text-amber-400 flex items-center gap-3 mb-2"><i data-lucide="store" class="w-8 h-8"></i> BOUTIQUE D'AMÉLIORATIONS</h2>
-                <div id="shopEscalation" class="mb-6 p-4 bg-red-950/50 border border-red-500/50 rounded-xl flex items-start gap-4 shadow-lg hidden">
-                    <i data-lucide="alert-triangle" class="text-red-500 shrink-0 mt-1 animate-pulse-fast w-7 h-7"></i>
+            <!-- ÉCRAN DRAFT DE RELIQUE -->
+            <div id="screen-RELIC_DRAFT" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col p-6 overflow-y-auto items-center justify-center hidden">
+                <div class="text-center mb-8 animate-pulse-fast">
+                    <i data-lucide="sparkles" class="text-amber-400 w-12 h-12 mx-auto mb-2"></i>
+                    <h2 class="text-3xl font-black text-white">RÉCOMPENSE DE NIVEAU</h2>
+                    <p class="text-slate-400">Choisissez une relique pour renforcer votre build.</p>
+                </div>
+                
+                <div id="draftRelicsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl">
+                    <!-- Généré en JS -->
+                </div>
+            </div>
+
+            <!-- ÉCRAN TRANSITION NIVEAU -->
+            <div id="screen-TRANSITION" class="absolute inset-0 bg-slate-900/95 z-10 flex flex-col items-center justify-center p-6 md:p-10 overflow-y-auto hidden text-center">
+                <h2 class="text-4xl font-black text-emerald-400 mb-6 flex items-center justify-center gap-3">
+                    <i data-lucide="check-circle-2" class="w-10 h-10"></i> PRÊT POUR LA SUITE
+                </h2>
+                
+                <div id="transitionEscalation" class="mb-8 p-6 bg-red-950/50 border border-red-500/50 rounded-xl flex flex-col items-center gap-4 shadow-lg hidden max-w-md w-full">
+                    <i data-lucide="alert-triangle" class="text-red-500 animate-pulse-fast w-10 h-10"></i>
                     <div>
-                        <h3 class="font-bold text-red-400 text-lg uppercase tracking-wider mb-1">Attention : Escalade !</h3>
-                        <p id="shopEscalationText" class="text-red-200/80 text-sm"></p>
+                        <h3 class="font-bold text-red-400 text-xl uppercase tracking-wider mb-2">Attention : Escalade !</h3>
+                        <p id="transitionEscalationText" class="text-red-200/80 text-md"></p>
                     </div>
                 </div>
-                <p id="shopSubtitle" class="text-slate-400 mb-8 border-b border-slate-800 pb-4"></p>
-                <div id="shopItemsGrid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-1 mb-8"></div>
-                <div class="flex gap-4">
-                    <button onclick="startNextStage()" id="btnEnterStage" class="flex-1 py-4 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-bold text-xl transition-all shadow-lg text-white"></button>
-                    <button onclick="quitToMenu()" class="px-6 py-4 bg-slate-800 hover:bg-slate-700 rounded-xl font-bold transition-colors text-slate-400 hover:text-white flex items-center justify-center border border-slate-700"><i data-lucide="home" class="w-6 h-6"></i></button>
+                
+                <p id="transitionSubtitle" class="text-slate-400 mb-12 text-lg"></p>
+                
+                <div class="flex gap-4 w-full max-w-md">
+                    <button onclick="startNextStage()" id="btnEnterStage" class="flex-1 py-5 bg-emerald-600 hover:bg-emerald-500 rounded-xl font-black text-2xl transition-all shadow-lg text-white"></button>
                 </div>
             </div>
 
@@ -184,13 +233,9 @@
                     </div>
                     <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1">
                         <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="heart" class="text-red-500 w-4 h-4"></i> Santé</div>
-                        <div class="font-black text-2xl text-white"><span id="uiHp">3</span> <span class="text-slate-600 text-lg">/ <span id="uiMaxHp">3</span></span></div>
+                        <div class="font-black text-2xl text-white"><span id="uiHp">2</span> <span class="text-slate-600 text-lg">/ <span id="uiMaxHp">2</span></span></div>
                     </div>
-                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1">
-                        <div class="flex items-center gap-2 text-slate-400 text-sm"><i data-lucide="coins" class="text-amber-400 w-4 h-4"></i> Or</div>
-                        <div id="uiGold" class="font-black text-2xl text-white">0</div>
-                    </div>
-                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 relative overflow-hidden">
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl flex flex-col gap-1 relative overflow-hidden col-span-2">
                         <div class="flex items-center gap-2 text-slate-400 text-sm z-10"><i data-lucide="zap" class="text-blue-400 w-4 h-4"></i> Progression</div>
                         <div class="font-black text-2xl text-white z-10"><span id="uiFood">0</span> <span class="text-slate-600 text-lg">/ <span id="uiFoodReq">7</span></span></div>
                         <div id="uiProgressBar" class="absolute bottom-0 left-0 h-1 bg-blue-500/50 transition-all duration-300" style="width: 0%"></div>
@@ -203,11 +248,15 @@
                 <div id="uiModsList" class="flex flex-col gap-2"></div>
             </div>
 
+            <div id="uiRunRelicsContainer" class="hidden">
+                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2"><i data-lucide="sparkles" class="text-amber-400 w-3.5 h-3.5"></i> Reliques Obtenues</h3>
+                <div id="uiRunRelicsList" class="flex flex-col gap-2"></div>
+            </div>
+
             <div>
-                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs">Build Actuel</h3>
+                <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs">Statistiques</h3>
                 <ul class="space-y-2 text-sm text-slate-300 bg-slate-950 border border-slate-800 p-4 rounded-xl">
-                    <li class="flex justify-between items-center"><span>Classe</span> <span id="uiClass" class="font-bold text-green-400">Python</span></li>
-                    <li class="flex justify-between items-center"><span>Multiplicateur d'Or</span> <span id="uiMult" class="font-bold text-amber-400 bg-amber-400/10 px-2 py-1 rounded">x1</span></li>
+                    <li class="flex justify-between items-center"><span>Origine</span> <span id="uiClass" class="font-bold text-green-400">Écaille de Python</span></li>
                     <li class="flex justify-between items-center"><span>Délai de Mouvement</span> <span id="uiSpeed" class="font-bold text-white bg-slate-800 px-2 py-1 rounded">100ms</span></li>
                     <li class="flex justify-between items-center"><span>Taux de Croissance</span> <span id="uiGrowth" class="font-bold px-2 py-1 rounded text-slate-300 bg-slate-800">+1</span></li>
                 </ul>
@@ -224,14 +273,11 @@
         </div>
     </div>
 
-    <!-- MODULES FIREBASE (IMPORT) -->
+    <!-- MODULES FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, push, query, orderByChild, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-        // ==========================================
-        // PASTE YOUR FIREBASE CONFIG OBJECT HERE
-        // ==========================================
         const firebaseConfig = {
             apiKey: "AIzaSyC76d3JvCvvjmKBmgsgJGWOb5ia5Uuk5s8",
             authDomain: "snaek-roguelikte.firebaseapp.com",
@@ -241,7 +287,6 @@
             appId: "1:443020102096:web:5644058ea9361b850bd1d5",
             databaseURL: "https://snaek-roguelikte-default-rtdb.europe-west1.firebasedatabase.app/" // Important!
         };
-        // ======================================================================================
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
@@ -284,7 +329,6 @@
                             seenNames.add(score.name);
                         }
                     }
-                    
                     return uniqueScores;
                 }
                 return [];
@@ -299,65 +343,64 @@
         // --- 0. OUTILS DEV & PARAMÈTRES ---
         let isInvulnerable = false;
         let forcedMaxMods = { ROCKS: false, SPOILED_APPLES: false, MOVING_FOOD: false, ICE_PATCHES: false, SKELETON_SPAWNER: false };
+        let forcedRunRelics = { BEEF_HEART: false, SOFT_TIE: false, EARTHWORM: false, SPIKED_BOOTS: false, FAST_METABOLISM: false, IRON_STOMACH: false, BONE_PACT: false, STONE_SCALE: false };
         let isSettingsUnlocked = false;
 
-        window.openSettings = function() {
-            document.getElementById('screen-SETTINGS').classList.remove('hidden');
-        }
-
-        window.closeSettings = function() {
-            document.getElementById('screen-SETTINGS').classList.add('hidden');
-            document.getElementById('devPasswordInput').value = '';
-        }
+        window.openSettings = function() { document.getElementById('screen-SETTINGS').classList.remove('hidden'); }
+        window.closeSettings = function() { document.getElementById('screen-SETTINGS').classList.add('hidden'); document.getElementById('devPasswordInput').value = ''; }
 
         window.checkDevPassword = function() {
             if (document.getElementById('devPasswordInput').value === 'Snaek') {
                 isSettingsUnlocked = true;
                 document.getElementById('devAuthBox').classList.add('hidden');
                 document.getElementById('devToolsBox').classList.remove('hidden');
-            } else {
-                alert('Accès Refusé : Mot de passe incorrect');
-            }
+            } else alert('Accès Refusé : Mot de passe incorrect');
         }
 
-        window.toggleInvulnerable = function(checked) {
-            isInvulnerable = checked;
-        }
+        window.toggleInvulnerable = function(checked) { isInvulnerable = checked; }
 
         window.toggleSpecificMod = function(modId, checked) {
             forcedMaxMods[modId] = checked;
-            
-            // Si le jeu est en cours, appliquer les changements instantanément
             if (gameState === 'PLAYING') {
-                if (checked) {
-                    activeModifiers[modId] = 10;
-                } else {
-                    delete activeModifiers[modId];
-                }
+                if (checked) activeModifiers[modId] = 10;
+                else delete activeModifiers[modId];
                 
-                if (['ROCKS', 'ICE_PATCHES', 'SKELETON_SPAWNER'].includes(modId)) {
-                    generateEnvironment();
-                }
-                if (modId === 'SPOILED_APPLES') {
-                    spawnSpoiledApples();
-                }
+                if (['ROCKS', 'ICE_PATCHES', 'SKELETON_SPAWNER'].includes(modId)) generateEnvironment();
+                if (modId === 'SPOILED_APPLES') spawnSpoiledApples();
                 
-                startIntervals(); // Relance ou coupe les timers spéciaux (IA, nourriture mobile)
-                updateUIPanels();
-                drawCanvas();
+                startIntervals(); updateUIPanels(); drawCanvas();
             }
         }
 
-        // --- 1. LOGIQUE SAUVEGARDE & PROFIL ---
+        window.toggleSpecificRelic = function(relicId, checked) {
+            forcedRunRelics[relicId] = checked;
+            if (gameState === 'PLAYING') {
+                if (checked) {
+                    if (!activeRunRelics.includes(relicId)) {
+                        activeRunRelics.push(relicId);
+                        if (relicId === 'BEEF_HEART') { maxHp += 1; hp += 1; }
+                        if (relicId === 'SOFT_TIE') { speed += 10; }
+                        if (relicId === 'BONE_PACT') { bonePactStacks = 0; }
+                    }
+                } else {
+                    const idx = activeRunRelics.indexOf(relicId);
+                    if (idx !== -1) {
+                        activeRunRelics.splice(idx, 1);
+                        if (relicId === 'BEEF_HEART') { maxHp -= 1; hp = Math.min(hp, maxHp); }
+                        if (relicId === 'SOFT_TIE') { speed -= 10; }
+                        if (relicId === 'BONE_PACT') { bonePactStacks = 0; }
+                    }
+                }
+                updateUIPanels(); startIntervals();
+            }
+        }
+
+        // --- 1. LOGIQUE PROFIL ---
         let currentProfileName = localStorage.getItem('snakeLite_Name');
 
         function initProfile() {
-            if (!currentProfileName) {
-                setGameState('REGISTER');
-            } else {
-                document.getElementById('menuPlayerName').innerText = currentProfileName;
-                setGameState('MENU');
-            }
+            if (!currentProfileName) setGameState('REGISTER');
+            else { document.getElementById('menuPlayerName').innerText = currentProfileName; setGameState('MENU'); }
         }
 
         window.savePlayerName = function() {
@@ -367,21 +410,15 @@
                 localStorage.setItem('snakeLite_Name', currentProfileName);
                 document.getElementById('menuPlayerName').innerText = currentProfileName;
                 setGameState('MENU');
-            } else {
-                alert("Veuillez entrer un nom valide (1-12 caractères).");
-            }
+            } else alert("Veuillez entrer un nom valide (1-12 caractères).");
         }
 
         // --- 2. LOGIQUE UI CLASSEMENT ---
         let currentLeaderboardTab = 'lifetime';
         
         window.toggleLeaderboard = function() {
-            if (gameState === 'LEADERBOARD') {
-                setGameState('MENU');
-            } else {
-                setGameState('LEADERBOARD');
-                fetchLeaderboard('lifetime');
-            }
+            if (gameState === 'LEADERBOARD') setGameState('MENU');
+            else { setGameState('LEADERBOARD'); fetchLeaderboard('lifetime'); }
         }
 
         window.fetchLeaderboard = async function(tab) {
@@ -401,12 +438,10 @@
 
             try {
                 let scores = await window.dbFetchScores();
-                
                 if (tab === 'weekly') {
                     const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
                     scores = scores.filter(s => s.timestamp > oneWeekAgo);
                 }
-                
                 scores = scores.slice(0, 10);
 
                 if (scores.length === 0) {
@@ -439,13 +474,35 @@
         const INITIAL_SNAKE = [{ x: 10, y: 10 }, { x: 10, y: 11 }, { x: 10, y: 12 }];
         const INITIAL_DIR = { x: 0, y: -1 };
 
-        const CLASSES = {
-            PYTHON: { id: 'PYTHON', name: 'Python', desc: 'Un choix équilibré. Aucune faiblesse particulière.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-green-400', icon: 'activity', iconColor: 'text-green-500' },
-            GHOST: { id: 'GHOST', name: 'Fantôme', desc: 'Traverse les rochers, mais fragile. Grandit de +2.', baseHp: 1, baseSpeed: 100, ghost: true, goldMult: 1, growthPerFood: 2, colorClass: 'text-purple-400', icon: 'ghost', iconColor: 'text-purple-500' },
-            VIPER: { id: 'VIPER', name: 'Vipère', desc: 'Rapide, trouve 2x plus d\'or, mais très fragile.', baseHp: 2, baseSpeed: 75, ghost: false, goldMult: 2, growthPerFood: 1, colorClass: 'text-blue-400', icon: 'wind', iconColor: 'text-blue-500' },
-            HYDRA: { id: 'HYDRA', name: 'Hydre', desc: '25% de chance de générer de la nourriture en mangeant.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-pink-400', icon: 'dna', iconColor: 'text-pink-500' },
-            MERCHANT: { id: 'MERCHANT', name: 'Marchand', desc: 'Boutique à -20%. Commence avec 50 pièces d\'or.', baseHp: 3, baseSpeed: 100, ghost: false, goldMult: 1, growthPerFood: 1, colorClass: 'text-amber-500', icon: 'shopping-bag', iconColor: 'text-amber-500' },
+        // Reliques de Départ
+        const CLASS_RELICS = {
+            PYTHON: { id: 'PYTHON', name: 'Écaille de Python', desc: 'Une relique protectrice. Augmente la vitalité.', hpMod: 1, speedMod: 0, ghost: false, growthMod: 0, colorClass: 'text-green-400', icon: 'shield', iconColor: 'text-green-500' },
+            GHOST: { id: 'GHOST', name: 'Âme de Fantôme', desc: 'Une essence immatérielle et instable.', hpMod: -1, speedMod: 0, ghost: true, growthMod: 1, colorClass: 'text-purple-400', icon: 'ghost', iconColor: 'text-purple-500' },
+            VIPER: { id: 'VIPER', name: 'Croc de Vipère', desc: 'Des réflexes accrus pour esquiver le danger.', hpMod: 0, speedMod: -25, ghost: false, growthMod: 0, colorClass: 'text-blue-400', icon: 'wind', iconColor: 'text-blue-500' },
+            HYDRA: { id: 'HYDRA', name: 'Sang d\'Hydre', desc: '25% de chance de générer une nourriture bonus.', hpMod: 0, speedMod: 0, ghost: false, growthMod: 0, colorClass: 'text-pink-400', icon: 'dna', iconColor: 'text-pink-500' },
         };
+
+        // Reliques Obtenables par rareté
+        const COMMON_RELICS = {
+            BEEF_HEART: { id: 'BEEF_HEART', name: 'Cœur de Bœuf', desc: '+1 PV Max et soigne 1 PV.', icon: 'heart', colorClass: 'text-red-500' },
+            SOFT_TIE: { id: 'SOFT_TIE', name: 'Tié Mou', desc: 'Vitesse de déplacement ralentie de 10ms.', icon: 'hourglass', colorClass: 'text-amber-600' },
+            EARTHWORM: { id: 'EARTHWORM', name: 'Ver de Terre', desc: 'Pommes +1 progression, autres nourritures limitées à 1.', icon: 'bug', colorClass: 'text-emerald-500' },
+            SNAKE_OIL: { id: 'SNAKE_OIL', name: 'Huile de Serpent', desc: 'Soigne instantanément 2 PV.', icon: 'droplet', colorClass: 'text-blue-400' },
+            POCKET_WATCH: { id: 'POCKET_WATCH', name: 'Montre à Gousset', desc: 'Vitesse fortement ralentie (-20ms).', icon: 'clock', colorClass: 'text-zinc-300' }
+        };
+
+        const UNCOMMON_RELICS = {
+            SPIKED_BOOTS: { id: 'SPIKED_BOOTS', name: 'Bottes à Crampons', desc: 'Tu ne glisses plus sur les plaques de glace.', icon: 'footprints', colorClass: 'text-cyan-200' },
+            FAST_METABOLISM: { id: 'FAST_METABOLISM', name: 'Métabolisme Rapide', desc: 'Tu grandis de 1 peu importe ce que tu manges.', icon: 'flame', colorClass: 'text-orange-400' }
+        };
+
+        const RARE_RELICS = {
+            IRON_STOMACH: { id: 'IRON_STOMACH', name: 'Estomac de Fer', desc: 'Mangez 1 Pomme Pourrie par niveau pour gagner de la Progression.', icon: 'shield-alert', colorClass: 'text-emerald-300' },
+            BONE_PACT: { id: 'BONE_PACT', name: 'Pacte d\'Ossements', desc: 'Manger des squelettes augmente vos PV (2) puis soigne (4).', icon: 'skull', colorClass: 'text-zinc-100' },
+            STONE_SCALE: { id: 'STONE_SCALE', name: 'Écaille de Pierre', desc: 'Le 1er impact sur un mur/rocher crée une explosion protectrice.', icon: 'hexagon', colorClass: 'text-stone-400' }
+        };
+
+        const ALL_RELICS = { ...COMMON_RELICS, ...UNCOMMON_RELICS, ...RARE_RELICS };
 
         const MODIFIER_TYPES = {
             ROCKS: { id: 'ROCKS', name: 'Terrain Statique', desc: 'Des rochers indestructibles apparaissent. (Max Niv.10)', icon: 'mountain', color: 'text-slate-400' },
@@ -457,13 +514,16 @@
 
         // --- 4. VARIABLES D'ÉTAT ---
         let gameState = 'MENU';
-        let playerClass = CLASSES.PYTHON;
-        let stage = 1, hp = 3, maxHp = 3, gold = 0, foodEaten = 0, foodValue = 1, speed = 100;
+        let playerRelic = CLASS_RELICS.PYTHON;
+        let stage = 1, hp = 3, maxHp = 3, foodEaten = 0, speed = 100;
         let activeModifiers = {}, lastModifierEvent = null;
-        
-        let potionPurchases = 0;
-        let heartPurchases = 0;
-        let applePurchases = 0;
+        let activeRunRelics = []; 
+        let offeredRelics = []; 
+
+        // Variables des Reliques Rares
+        let ironStomachUsedThisStage = false;
+        let bonePactStacks = 0;
+        let stoneScaleUsedThisStage = false;
 
         let snake = [...INITIAL_SNAKE];
         let dir = {...INITIAL_DIR};
@@ -471,6 +531,7 @@
         let foods = [{ x: 5, y: 5, type: 'APPLE' }];
         let rocks = [], ice = [], spoiledFoods = [];
         let spawners = [], enemies = [];
+        let skeletonsSpawnedThisStage = 0;
         let bigSpoiledFood = null;
         let growthQueue = 0;
 
@@ -482,7 +543,6 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Échelonnage dynamique des niveaux !
         const FOOD_TO_ADVANCE = () => {
             let req = 5;
             for (let i = 2; i <= stage; i++) {
@@ -494,19 +554,13 @@
             }
             return req;
         };
-        
-        const getShopCost = (baseCost) => playerClass.id === 'MERCHANT' ? Math.round(baseCost * 0.8) : baseCost;
 
-        // --- 5. MOTEUR AUDIO RÉTRO (WEB AUDIO API) ---
+        // --- 5. MOTEUR AUDIO RÉTRO ---
         let audioCtx = null;
         
         function initAudio() {
-            if (!audioCtx) {
-                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            if (audioCtx.state === 'suspended') {
-                audioCtx.resume();
-            }
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
         }
 
         function playTone(freq, type, duration, vol=0.1, slideFreq=null) {
@@ -521,32 +575,23 @@
             gain.gain.setValueAtTime(vol, audioCtx.currentTime);
             gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
             
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
-            osc.start();
-            osc.stop(audioCtx.currentTime + duration);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(); osc.stop(audioCtx.currentTime + duration);
         }
 
         const sfx = {
             eat: () => playTone(440, 'sine', 0.1, 0.1, 880),
             damage: () => playTone(250, 'sawtooth', 0.3, 0.2, 100),
             rock: () => playTone(100, 'square', 0.15, 0.2, 50),
-            shop: () => { 
-                playTone(523.25, 'sine', 0.1); 
-                setTimeout(() => playTone(659.25, 'sine', 0.2), 100); 
-            }
+            shop: () => { playTone(523.25, 'sine', 0.1); setTimeout(() => playTone(659.25, 'sine', 0.2), 100); }
         };
 
-        // --- TIMERS DE MOUVEMENT INDÉPENDANTS ---
         function getFoodMoveDelay() {
             const level = activeModifiers.MOVING_FOOD || 0;
             if (level === 0) return Infinity;
-            
             const clamped = Math.min(level, 10);
             const minTime = 2500 - ((clamped - 1) * (1500 / 9));
             const maxTime = 3500 - ((clamped - 1) * (2300 / 9));
-            
             return Math.floor(Math.random() * (maxTime - minTime + 1) + minTime);
         }
 
@@ -572,14 +617,11 @@
         function getEmptySpot(checkSnake = true, checkRocks = true, checkIce = true, checkFood = true, additionalAvoids = [], minDistFromHead = 0) {
             let spot = { x: 0, y: 0 };
             const head = snake[0];
-            
             for (let pass = 0; pass < 2; pass++) {
                 let isOccupied = true, attempts = 0;
                 let currentMinDist = pass === 0 ? minDistFromHead : 0;
-                
                 while (isOccupied && attempts < 500) {
                     spot = { x: Math.floor(Math.random() * GRID_SIZE), y: Math.floor(Math.random() * GRID_SIZE) };
-                    
                     const onSnake = checkSnake ? snake.some(s => s.x === spot.x && s.y === spot.y) : false;
                     const onRocks = checkRocks ? rocks.some(r => r.x === spot.x && r.y === spot.y) : false;
                     const onIce = checkIce ? ice.some(i => i.x === spot.x && i.y === spot.y) : false;
@@ -588,16 +630,12 @@
                     
                     let onBig = false;
                     if (bigSpoiledFood) {
-                        if (spot.x >= bigSpoiledFood.x && spot.x <= bigSpoiledFood.x + 1 &&
-                            spot.y >= bigSpoiledFood.y && spot.y <= bigSpoiledFood.y + 1) {
-                            onBig = true;
-                        }
+                        if (spot.x >= bigSpoiledFood.x && spot.x <= bigSpoiledFood.x + 1 && spot.y >= bigSpoiledFood.y && spot.y <= bigSpoiledFood.y + 1) onBig = true;
                     }
 
                     let tooCloseToHead = false;
                     if (currentMinDist > 0 && head) {
-                        const dist = Math.abs(spot.x - head.x) + Math.abs(spot.y - head.y);
-                        if (dist <= currentMinDist) tooCloseToHead = true;
+                        if (Math.abs(spot.x - head.x) + Math.abs(spot.y - head.y) <= currentMinDist) tooCloseToHead = true;
                     }
                     
                     isOccupied = onSnake || onRocks || onIce || onFood || onAdditional || onBig || tooCloseToHead;
@@ -612,32 +650,16 @@
             let spot = null;
             const head = snake[0];
             let attempts = 0;
-            
             while (attempts < 500) {
-                spot = { 
-                    x: Math.floor(Math.random() * (GRID_SIZE - 1)), 
-                    y: Math.floor(Math.random() * (GRID_SIZE - 1)) 
-                };
-                
+                spot = { x: Math.floor(Math.random() * (GRID_SIZE - 1)), y: Math.floor(Math.random() * (GRID_SIZE - 1)) };
                 let isOccupied = false;
-                const spots2x2 = [
-                    {x: spot.x, y: spot.y}, {x: spot.x+1, y: spot.y},
-                    {x: spot.x, y: spot.y+1}, {x: spot.x+1, y: spot.y+1}
-                ];
-                
+                const spots2x2 = [ {x: spot.x, y: spot.y}, {x: spot.x+1, y: spot.y}, {x: spot.x, y: spot.y+1}, {x: spot.x+1, y: spot.y+1} ];
                 for (const s of spots2x2) {
-                    if (snake.some(seg => seg.x === s.x && seg.y === s.y) ||
-                        rocks.some(r => r.x === s.x && r.y === s.y) ||
-                        ice.some(i => i.x === s.x && i.y === s.y) ||
-                        foods.some(f => f.x === s.x && f.y === s.y) ||
-                        additionalAvoids.some(a => a.x === s.x && a.y === s.y)) {
-                        isOccupied = true; break;
-                    }
-                    if (head && Math.abs(s.x - head.x) + Math.abs(s.y - head.y) < 5) {
-                        isOccupied = true; break; 
-                    }
+                    if (snake.some(seg => seg.x === s.x && seg.y === s.y) || rocks.some(r => r.x === s.x && r.y === s.y) ||
+                        ice.some(i => i.x === s.x && i.y === s.y) || foods.some(f => f.x === s.x && f.y === s.y) ||
+                        additionalAvoids.some(a => a.x === s.x && a.y === s.y)) { isOccupied = true; break; }
+                    if (head && Math.abs(s.x - head.x) + Math.abs(s.y - head.y) < 5) { isOccupied = true; break; }
                 }
-                
                 if (!isOccupied) return spot;
                 attempts++;
             }
@@ -650,7 +672,6 @@
             if (iceLevel > 0) {
                 const clampedIceLevel = Math.min(iceLevel, 10);
                 const numPatches = Math.floor(2 + (clampedIceLevel - 1) * (10 / 9));
-                
                 for (let p = 0; p < numPatches; p++) {
                     let placed = false, attempts = 0;
                     while (!placed && attempts < 100) {
@@ -658,11 +679,7 @@
                         const isHoriz = Math.random() > 0.5;
                         const x = Math.floor(Math.random() * (GRID_SIZE - (isHoriz ? 3 : 0)));
                         const y = Math.floor(Math.random() * (GRID_SIZE - (!isHoriz ? 3 : 0)));
-                        
-                        const spots = isHoriz ? 
-                            [{x, y}, {x: x+1, y}, {x: x+2, y}] : 
-                            [{x, y}, {x, y: y+1}, {x, y: y+2}];
-                            
+                        const spots = isHoriz ? [{x, y}, {x: x+1, y}, {x: x+2, y}] : [{x, y}, {x, y: y+1}, {x, y: y+2}];
                         const head = snake[0];
                         let isValid = true;
                         for (const s of spots) {
@@ -682,14 +699,13 @@
             if (rockLevel > 0) {
                 const clampedRockLevel = Math.min(rockLevel, 10);
                 const numRocks = clampedRockLevel * 3; 
-                for(let i = 0; i < numRocks; i++) {
-                    newRocks.push(getEmptySpot(true, false, false, false, [...newRocks, ...newIce], 4)); 
-                }
+                for(let i = 0; i < numRocks; i++) newRocks.push(getEmptySpot(true, false, false, false, [...newRocks, ...newIce], 4)); 
             }
             rocks = newRocks;
 
             const spawnerLevel = activeModifiers.SKELETON_SPAWNER || 0;
             let newSpawners = [];
+            skeletonsSpawnedThisStage = 0; 
             if (spawnerLevel > 0) {
                 const spot = getEmptySpot(true, true, true, true, [...newRocks, ...newIce], 5);
                 newSpawners.push({ ...spot, nextSpawnTime: Date.now() + getSpawnerDelay(spawnerLevel) });
@@ -702,16 +718,12 @@
             const spoiledLevel = activeModifiers.SPOILED_APPLES || 0;
             let newSpoiled = [];
             bigSpoiledFood = null;
-            
             for(let i = 0; i < spoiledLevel; i++) {
                 const spot = getEmptySpot(true, true, true, true, [...foods, ...newSpoiled, ...spawners], 5);
                 newSpoiled.push({ ...spot, nextMoveTime: Date.now() + getFoodMoveDelay() }); 
             }
             spoiledFoods = newSpoiled;
-            
-            if (spoiledLevel >= 10) {
-                bigSpoiledFood = getEmptySpot2x2([...foods, ...newSpoiled, ...spawners]);
-            }
+            if (spoiledLevel >= 10) bigSpoiledFood = getEmptySpot2x2([...foods, ...newSpoiled, ...spawners]);
         }
 
         function resetSnakePosition() {
@@ -719,10 +731,8 @@
             dir = {...INITIAL_DIR}; lastProcessedDir = {...INITIAL_DIR};
             growthQueue = 0;
             generateEnvironment();
-            
             const initialSpot = getEmptySpot(true, true, true, true, spawners, 4);
             foods = [{ ...initialSpot, type: 'APPLE', nextMoveTime: Date.now() + getFoodMoveDelay() }];
-            
             spawnSpoiledApples();
         }
 
@@ -733,12 +743,9 @@
                 if (rocks.some(r => r.x === spot.x && r.y === spot.y)) return false;
                 if (spawners.some(s => s.x === spot.x && s.y === spot.y)) return false;
                 if (snake.some(s => s.x === spot.x && s.y === spot.y)) return false;
-                
                 if (bigSpoiledFood) {
-                    if (spot.x >= bigSpoiledFood.x && spot.x <= bigSpoiledFood.x + 1 &&
-                        spot.y >= bigSpoiledFood.y && spot.y <= bigSpoiledFood.y + 1) return false;
+                    if (spot.x >= bigSpoiledFood.x && spot.x <= bigSpoiledFood.x + 1 && spot.y >= bigSpoiledFood.y && spot.y <= bigSpoiledFood.y + 1) return false;
                 }
-                
                 if (!isSpoiled) {
                     if (foods.some(f => f !== entity && f.x === spot.x && f.y === spot.y)) return false;
                     if (spoiledFoods.some(s => s.x === spot.x && s.y === spot.y)) return false;
@@ -749,13 +756,7 @@
                 return true;
             };
 
-            const adjacent = [
-                { x: entity.x + 1, y: entity.y },
-                { x: entity.x - 1, y: entity.y },
-                { x: entity.x, y: entity.y + 1 },
-                { x: entity.x, y: entity.y - 1 }
-            ];
-
+            const adjacent = [ { x: entity.x + 1, y: entity.y }, { x: entity.x - 1, y: entity.y }, { x: entity.x, y: entity.y + 1 }, { x: entity.x, y: entity.y - 1 } ];
             const validSpots = adjacent.filter(spot => isValidSpot(spot));
 
             if (validSpots.length > 0) {
@@ -780,7 +781,6 @@
                     }
                     return f;
                 });
-
                 spoiledFoods = spoiledFoods.map(s => {
                     if (now >= s.nextMoveTime) {
                         const newSpot = tryMoveEntity(s, true);
@@ -793,10 +793,9 @@
 
             if (activeModifiers.SKELETON_SPAWNER > 0) {
                 const spawnerLevel = activeModifiers.SKELETON_SPAWNER;
-                const maxEnemies = spawnerLevel; 
                 
                 spawners.forEach(sp => {
-                    if (now >= sp.nextSpawnTime && enemies.length < maxEnemies) {
+                    if (now >= sp.nextSpawnTime && skeletonsSpawnedThisStage < spawnerLevel) {
                         const adj = [{x: sp.x+1, y: sp.y}, {x: sp.x-1, y: sp.y}, {x: sp.x, y: sp.y+1}, {x: sp.x, y: sp.y-1}];
                         const valid = adj.filter(spot => {
                             if (spot.x < 0 || spot.x >= GRID_SIZE || spot.y < 0 || spot.y >= GRID_SIZE) return false;
@@ -809,9 +808,9 @@
                         
                         if (valid.length > 0) {
                             const spot = valid[Math.floor(Math.random() * valid.length)];
-                            // Ajout de la propriété scaredMoves pour tracker l'essoufflement
                             enemies.push({ ...spot, nextMoveTime: now + 400, scaredMoves: 0 });
                             sp.nextSpawnTime = now + getSpawnerDelay(spawnerLevel);
+                            skeletonsSpawnedThisStage++; 
                         }
                     }
                 });
@@ -821,26 +820,16 @@
                     if (now >= e.nextMoveTime) {
                         const head = snake[0];
                         const distToHead = Math.abs(e.x - head.x) + Math.abs(e.y - head.y);
-                        
-                        // Vision en ligne droite : même ligne ou colonne, à 5 cases ou moins
-                        const inLineOfSight = (e.x === head.x && Math.abs(e.y - head.y) <= 5) || 
-                                              (e.y === head.y && Math.abs(e.x - head.x) <= 5);
-                        
-                        // Fuit si la tête est proche (3 cases) OU vue au loin en ligne droite (5 cases)
+                        const inLineOfSight = (e.x === head.x && Math.abs(e.y - head.y) <= 5) || (e.y === head.y && Math.abs(e.x - head.x) <= 5);
                         const isScared = distToHead <= 3 || inLineOfSight;
 
-                        // Mise à jour de l'adrénaline de fuite
-                        if (isScared) {
-                            e.scaredMoves = (e.scaredMoves || 0) + 1;
-                        } else {
-                            e.scaredMoves = 0; // Se calme s'il n'est plus poursuivi
-                        }
+                        if (isScared) e.scaredMoves = (e.scaredMoves || 0) + 1;
+                        else e.scaredMoves = 0; 
 
-                        // Calcul de la vitesse dynamique (Démarrage explosif puis essoufflement)
-                        let scaredDelay = 120;
-                        if (e.scaredMoves === 1) scaredDelay = 75;
-                        else if (e.scaredMoves === 2) scaredDelay = 85;
-                        else if (e.scaredMoves === 3) scaredDelay = 95;
+                        let scaredDelay = 150;
+                        if (e.scaredMoves === 1) scaredDelay = 85;
+                        else if (e.scaredMoves === 2) scaredDelay = 95;
+                        else if (e.scaredMoves === 3) scaredDelay = 105;
 
                         const adj = [{x: e.x+1, y: e.y}, {x: e.x-1, y: e.y}, {x: e.x, y: e.y+1}, {x: e.x, y: e.y-1}];
                         const valid = adj.filter(spot => {
@@ -855,41 +844,26 @@
                         if (valid.length > 0) {
                             let bestSpot = valid[0];
                             if (isScared) {
-                                // FUITE : Maximiser la distance par rapport à la tête
                                 let maxD = -1;
                                 valid.forEach(v => {
                                     const d = Math.abs(v.x - head.x) + Math.abs(v.y - head.y);
-                                    if (d > maxD) { 
-                                        maxD = d; 
-                                        bestSpot = v; 
-                                    } else if (d === maxD && Math.random() > 0.5) {
-                                        // Randomisation pour éviter qu'il ne se coince dans une boucle d'allers-retours
-                                        bestSpot = v;
-                                    }
+                                    if (d > maxD) { maxD = d; bestSpot = v; } 
+                                    else if (d === maxD && Math.random() > 0.5) bestSpot = v;
                                 });
                             } else {
-                                // ATTAQUE : Minimiser la distance vers le segment le plus proche (en ignorant la tête)
                                 let minD = Infinity;
                                 valid.forEach(v => {
                                     let closestBodyDist = Infinity;
-                                    // On cible les flancs (on ignore les segments 0 et 1 pour éviter un face-à-face accidentel)
                                     const startIndex = snake.length > 2 ? 2 : snake.length - 1;
-                                    
                                     for (let j = startIndex; j < snake.length; j++) {
                                         const dBody = Math.abs(v.x - snake[j].x) + Math.abs(v.y - snake[j].y);
                                         if (dBody < closestBodyDist) closestBodyDist = dBody;
                                     }
-                                    
-                                    if (closestBodyDist < minD) { 
-                                        minD = closestBodyDist; 
-                                        bestSpot = v; 
-                                    } else if (closestBodyDist === minD && Math.random() > 0.5) {
-                                        bestSpot = v;
-                                    }
+                                    if (closestBodyDist < minD) { minD = closestBodyDist; bestSpot = v; } 
+                                    else if (closestBodyDist === minD && Math.random() > 0.5) bestSpot = v;
                                 });
                             }
 
-                            // A-t-il touché le corps du serpent lors de son déplacement ?
                             const hitSnake = snake.some(s => s.x === bestSpot.x && s.y === bestSpot.y);
                             if (hitSnake) {
                                 enemies.splice(i, 1);
@@ -897,7 +871,6 @@
                             } else {
                                 e.x = bestSpot.x;
                                 e.y = bestSpot.y;
-                                // Application de la vitesse dynamique d'adrénaline
                                 e.nextMoveTime = now + (isScared ? scaredDelay : 400); 
                                 moved = true;
                             }
@@ -912,13 +885,8 @@
                 if (!isInvulnerable) hp -= 1;
                 sfx.damage();
                 triggerDamageVisuals();
-                // Si le squelette kamikaze vous touche, on ne réinitialise PAS le plateau (sauf si mort)
-                if (hp <= 0) {
-                    handleDamage();
-                } else {
-                    updateUIPanels();
-                    drawCanvas();
-                }
+                if (hp <= 0) handleDamage();
+                else { updateUIPanels(); drawCanvas(); }
             } else if (moved) {
                 drawCanvas();
             }
@@ -927,7 +895,6 @@
         function startIntervals() {
             clearInterval(gameLoopRef);
             gameLoopRef = setInterval(moveSnake, speed);
-
             clearInterval(tickIntervalRef);
             if (activeModifiers.MOVING_FOOD > 0 || activeModifiers.SKELETON_SPAWNER > 0) {
                 tickIntervalRef = setInterval(tickEntities, 50);
@@ -940,7 +907,7 @@
             const head = snake[0];
             const onIce = ice.some(iceTile => iceTile.x === head.x && iceTile.y === head.y);
             
-            if (onIce) dir = lastProcessedDir;
+            if (onIce && !activeRunRelics.includes('SPIKED_BOOTS')) dir = lastProcessedDir;
 
             const currentDir = dir;
             lastProcessedDir = currentDir;
@@ -948,7 +915,6 @@
             const newHead = { x: head.x + currentDir.x, y: head.y + currentDir.y };
             let hitWall = newHead.x < 0 || newHead.x >= GRID_SIZE || newHead.y < 0 || newHead.y >= GRID_SIZE;
             
-            // MÉCANIQUE PASSAGE DE MUR
             if (hitWall) {
                 newHead.x = (newHead.x + GRID_SIZE) % GRID_SIZE;
                 newHead.y = (newHead.y + GRID_SIZE) % GRID_SIZE;
@@ -956,14 +922,61 @@
             }
 
             let hitRockIndex = rocks.findIndex(rock => newHead.x === rock.x && newHead.y === rock.y);
-            if (hitRockIndex !== -1 && (playerClass.ghost || isInvulnerable)) hitRockIndex = -1;
+            if (hitRockIndex !== -1 && (playerRelic.ghost || isInvulnerable)) hitRockIndex = -1;
 
             let hitSpawner = spawners.some(s => s.x === newHead.x && s.y === newHead.y);
-
             let hitSelf = snake.some(segment => newHead.x === segment.x && newHead.y === segment.y);
             if (hitSelf && isInvulnerable) hitSelf = false;
 
-            // Retrait de "hitEnemy" de cette liste : percuter un ennemi avec la tête ne blesse plus !
+            // --- RELIQUE RARE : ÉCAILLE DE PIERRE ---
+            if ((hitWall || hitRockIndex !== -1) && activeRunRelics.includes('STONE_SCALE') && !stoneScaleUsedThisStage) {
+                stoneScaleUsedThisStage = true;
+                hitWall = false; // Sauve le joueur de la collision avec le mur
+                
+                if (hitRockIndex !== -1) {
+                    rocks.splice(hitRockIndex, 1);
+                    hitRockIndex = -1; // Sauve de la collision du rocher
+                } else {
+                    // Si c'est un mur, on bloque la tête à son ancienne position pour ne pas sortir de l'écran
+                    newHead.x = head.x;
+                    newHead.y = head.y;
+                }
+
+                // Explosion de zone 3x3
+                const br = [
+                    {x: newHead.x, y: newHead.y}, {x: newHead.x+1, y: newHead.y}, {x: newHead.x-1, y: newHead.y},
+                    {x: newHead.x, y: newHead.y+1}, {x: newHead.x, y: newHead.y-1},
+                    {x: newHead.x+1, y: newHead.y+1}, {x: newHead.x+1, y: newHead.y-1},
+                    {x: newHead.x-1, y: newHead.y+1}, {x: newHead.x-1, y: newHead.y-1}
+                ];
+                
+                rocks = rocks.filter(r => !br.some(b => b.x === r.x && b.y === r.y));
+                ice = ice.filter(i => !br.some(b => b.x === i.x && b.y === i.y));
+                spoiledFoods = spoiledFoods.filter(sf => !br.some(b => b.x === sf.x && b.y === sf.y));
+                spawners = spawners.filter(sp => !br.some(b => b.x === sp.x && b.y === sp.y));
+                enemies = enemies.filter(e => !br.some(b => b.x === e.x && b.y === e.y));
+                foods = foods.filter(f => !br.some(b => b.x === f.x && b.y === f.y));
+                
+                if (bigSpoiledFood) {
+                    const bigSpots = [
+                        {x: bigSpoiledFood.x, y: bigSpoiledFood.y}, {x: bigSpoiledFood.x+1, y: bigSpoiledFood.y},
+                        {x: bigSpoiledFood.x, y: bigSpoiledFood.y+1}, {x: bigSpoiledFood.x+1, y: bigSpoiledFood.y+1}
+                    ];
+                    if (br.some(b => bigSpots.some(bs => b.x === bs.x && b.y === bs.y))) {
+                        bigSpoiledFood = null;
+                    }
+                }
+
+                if (foods.length === 0) {
+                    const spot = getEmptySpot(true, true, true, true, spawners, 4);
+                    foods.push({ ...spot, type: getRandomFoodType(), nextMoveTime: Date.now() + getFoodMoveDelay() });
+                }
+
+                sfx.damage(); 
+                triggerDamageVisuals();
+                updateUIPanels();
+            }
+
             if (hitWall || hitSelf || hitSpawner) { 
                 if (!isInvulnerable) hp -= 1;
                 sfx.damage();
@@ -974,26 +987,17 @@
             if (bigSpoiledFood) {
                 if (newHead.x >= bigSpoiledFood.x && newHead.x <= bigSpoiledFood.x + 1 &&
                     newHead.y >= bigSpoiledFood.y && newHead.y <= bigSpoiledFood.y + 1) {
-                    if (!isInvulnerable) {
-                        hp = 0;
-                        sfx.damage();
-                        triggerDamageVisuals();
-                        handleDamage(); 
-                        return;
-                    }
+                    if (!isInvulnerable) { hp = 0; sfx.damage(); triggerDamageVisuals(); handleDamage(); return; }
                 }
             }
 
             if (hitRockIndex !== -1) {
                 rocks.splice(hitRockIndex, 1);
                 if (!isInvulnerable) hp -= 1;
-                growthQueue += 5;
+                growthQueue += activeRunRelics.includes('FAST_METABOLISM') ? 1 : 5;
                 sfx.rock();
                 triggerDamageVisuals();
-                if (hp <= 0) {
-                    handleDamage(); 
-                    return;
-                }
+                if (hp <= 0) { handleDamage(); return; }
                 updateUIPanels();
             }
 
@@ -1002,13 +1006,26 @@
             const hitSpoiledIndex = spoiledFoods.findIndex(sf => newHead.x === sf.x && newHead.y === sf.y);
             if (hitSpoiledIndex !== -1) {
                 spoiledFoods.splice(hitSpoiledIndex, 1);
-                if (!isInvulnerable) hp -= 1;
-                growthQueue += playerClass.growthPerFood;
-                sfx.damage();
-                triggerDamageVisuals();
-                if (hp <= 0) {
-                    handleDamage(); 
-                    return;
+                
+                // --- RELIQUE RARE : ESTOMAC DE FER ---
+                if (activeRunRelics.includes('IRON_STOMACH') && !ironStomachUsedThisStage) {
+                    ironStomachUsedThisStage = true;
+                    let progressGain = activeRunRelics.includes('EARTHWORM') ? 2 : 1;
+                    foodEaten += progressGain;
+                    sfx.eat();
+                    if (foodEaten >= FOOD_TO_ADVANCE()) { triggerWinStage(); return; }
+                    
+                    if (activeRunRelics.includes('FAST_METABOLISM')) {
+                        growthQueue += 1;
+                    } else {
+                        growthQueue += ((1 + playerRelic.growthMod) * 1);
+                    }
+                } else {
+                    if (!isInvulnerable) hp -= 1;
+                    growthQueue += activeRunRelics.includes('FAST_METABOLISM') ? 1 : (1 + playerRelic.growthMod);
+                    sfx.damage();
+                    triggerDamageVisuals();
+                    if (hp <= 0) { handleDamage(); return; }
                 }
                 updateUIPanels();
             }
@@ -1024,8 +1041,12 @@
                 if (foodType === 'BANANA') { progressGain = 2; growthGain = 2; }
                 else if (foodType === 'MELON') { progressGain = 3; growthGain = 3; }
 
+                if (activeRunRelics.includes('EARTHWORM')) {
+                    if (foodType === 'APPLE') progressGain = 2; 
+                    else progressGain = 1; 
+                }
+
                 foods.splice(eatenFoodIndex, 1);
-                gold += (foodValue * playerClass.goldMult);
                 foodEaten += progressGain;
                 sfx.eat();
                 
@@ -1038,33 +1059,48 @@
                     foods.push({ ...spot, type: getRandomFoodType(), nextMoveTime: Date.now() + getFoodMoveDelay() });
                 }
                 
-                if (playerClass.id === 'HYDRA' && Math.random() < 0.25) {
+                if (playerRelic.id === 'HYDRA' && Math.random() < 0.25) {
                     const spot = getEmptySpot(true, true, true, true, [...foods, ...spawners], 4);
                     foods.push({ ...spot, type: getRandomFoodType(), nextMoveTime: Date.now() + getFoodMoveDelay() });
                 }
                 
-                growthQueue += (playerClass.growthPerFood * growthGain);
-            }
-
-            // Le joueur réussit à manger un Squelette Kamikaze !
-            const hitEnemyIndex = enemies.findIndex(e => e.x === newHead.x && e.y === newHead.y);
-            if (hitEnemyIndex !== -1) {
-                enemies.splice(hitEnemyIndex, 1);
-                gold += (foodValue * playerClass.goldMult);
-                foodEaten += 2; // Compte double pour la progression !
-                growthQueue += (playerClass.growthPerFood * 2); // Fait grandir 2 fois plus !
-                sfx.eat();
-                
-                if (foodEaten >= FOOD_TO_ADVANCE()) {
-                    triggerWinStage(); return;
+                if (activeRunRelics.includes('FAST_METABOLISM')) {
+                    growthQueue += 1;
+                } else {
+                    growthQueue += ((1 + playerRelic.growthMod) * growthGain);
                 }
             }
 
-            if (growthQueue > 0) {
-                growthQueue -= 1; 
-            } else {
-                newSnake.pop(); 
+            const hitEnemyIndex = enemies.findIndex(e => e.x === newHead.x && e.y === newHead.y);
+            if (hitEnemyIndex !== -1) {
+                enemies.splice(hitEnemyIndex, 1);
+                foodEaten += 2; 
+
+                // --- RELIQUE RARE : PACTE D'OSSEMENTS ---
+                if (activeRunRelics.includes('BONE_PACT')) {
+                    if (bonePactStacks < 4) {
+                        bonePactStacks++;
+                        if (bonePactStacks === 2) {
+                            maxHp += 1;
+                            hp += 1;
+                        }
+                    }
+                    if (bonePactStacks === 4) {
+                        hp = Math.min(hp + 1, maxHp);
+                    }
+                }
+                
+                if (activeRunRelics.includes('FAST_METABOLISM')) {
+                    growthQueue += 1;
+                } else {
+                    growthQueue += ((1 + playerRelic.growthMod) * 2); 
+                }
+                sfx.eat();
+                if (foodEaten >= FOOD_TO_ADVANCE()) { triggerWinStage(); return; }
             }
+
+            if (growthQueue > 0) growthQueue -= 1; 
+            else newSnake.pop(); 
 
             snake = newSnake;
             drawCanvas();
@@ -1127,10 +1163,8 @@
                 ctx.beginPath();
                 ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE, CELL_SIZE - 4, 0, Math.PI * 2);
                 ctx.fill();
-                
                 ctx.fillStyle = '#14532d'; 
                 ctx.fillRect(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE - 4, bigSpoiledFood.y * CELL_SIZE + 4, 8, 6);
-                
                 ctx.fillStyle = '#1a2e05';
                 ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE - 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
                 ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE + 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
@@ -1141,25 +1175,16 @@
                 const cy = f.y * CELL_SIZE + CELL_SIZE / 2;
                 
                 if (f.type === 'BANANA') {
-                    ctx.fillStyle = '#facc15'; // Jaune
-                    ctx.beginPath(); 
-                    ctx.ellipse(cx, cy, CELL_SIZE/2 - 2, CELL_SIZE/4, Math.PI / 4, 0, Math.PI * 2); 
-                    ctx.fill();
+                    ctx.fillStyle = '#facc15';
+                    ctx.beginPath(); ctx.ellipse(cx, cy, CELL_SIZE/2 - 2, CELL_SIZE/4, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
                 } else if (f.type === 'MELON') {
-                    ctx.fillStyle = '#4ade80'; // Vert clair
-                    ctx.beginPath(); 
-                    ctx.arc(cx, cy, CELL_SIZE/2 - 1, 0, Math.PI * 2); 
-                    ctx.fill();
-                    // Rayures du melon
+                    ctx.fillStyle = '#4ade80';
+                    ctx.beginPath(); ctx.arc(cx, cy, CELL_SIZE/2 - 1, 0, Math.PI * 2); ctx.fill();
                     ctx.fillStyle = '#166534'; 
-                    ctx.fillRect(cx - 3, cy - 6, 2, 12);
-                    ctx.fillRect(cx + 1, cy - 6, 2, 12);
+                    ctx.fillRect(cx - 3, cy - 6, 2, 12); ctx.fillRect(cx + 1, cy - 6, 2, 12);
                 } else {
-                    // Pomme standard
                     ctx.fillStyle = '#ef4444'; 
-                    ctx.beginPath(); 
-                    ctx.arc(cx, cy, CELL_SIZE/2 - 2, 0, Math.PI * 2); 
-                    ctx.fill();
+                    ctx.beginPath(); ctx.arc(cx, cy, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
                     ctx.fillStyle = '#14532d'; 
                     ctx.fillRect(f.x * CELL_SIZE + CELL_SIZE/2 - 1, f.y * CELL_SIZE + 2, 2, 4);
                 }
@@ -1170,8 +1195,8 @@
 
             if (!isBlinking) {
                 snake.forEach((segment, index) => {
-                    const headColor = playerClass.ghost ? '#a855f7' : '#16a34a';
-                    const bodyColor = playerClass.ghost ? '#c084fc' : '#22c55e';
+                    const headColor = playerRelic.ghost ? '#a855f7' : '#16a34a';
+                    const bodyColor = playerRelic.ghost ? '#c084fc' : '#22c55e';
                     ctx.fillStyle = index === 0 ? headColor : bodyColor; 
                     ctx.beginPath(); ctx.roundRect(segment.x * CELL_SIZE + 1, segment.y * CELL_SIZE + 1, CELL_SIZE - 2, CELL_SIZE - 2, 4); ctx.fill();
                 });
@@ -1235,9 +1260,73 @@
         }
 
         function triggerWinStage() {
-            setGameState('SHOP');
+            clearInterval(gameLoopRef);
+            clearInterval(tickIntervalRef);
+            
+            offeredRelics = [];
+            let poolCommon = Object.keys(COMMON_RELICS);
+            let poolUncommon = Object.keys(UNCOMMON_RELICS);
+            let poolRare = Object.keys(RARE_RELICS);
+            
+            for (let i = 0; i < 3; i++) {
+                let rand = Math.random();
+                let pool = poolCommon;
+                
+                if (rand >= 0.60 && rand < 0.90) pool = poolUncommon;
+                else if (rand >= 0.90) pool = poolRare;
+                
+                if (pool.length === 0) {
+                    if (poolRare.length > 0) pool = poolRare;
+                    else if (poolUncommon.length > 0) pool = poolUncommon;
+                    else pool = poolCommon;
+                }
+                
+                if (pool.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * pool.length);
+                    const chosenId = pool.splice(randomIndex, 1)[0]; 
+                    offeredRelics.push(chosenId);
+                }
+            }
+            
+            document.getElementById('draftRelicsGrid').innerHTML = offeredRelics.map(id => {
+                const r = ALL_RELICS[id];
+                // Ajout visuel en fonction de la rareté
+                let borderCol = "border-slate-700";
+                if (RARE_RELICS[id]) borderCol = "border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]";
+                else if (UNCOMMON_RELICS[id]) borderCol = "border-cyan-500/50";
+
+                return `
+                <button onclick="selectDraftedRelic('${id}')" class="p-6 rounded-xl border ${borderCol} bg-slate-800 hover:border-amber-500 hover:bg-slate-800/80 transition-all flex flex-col items-center text-center gap-3 group">
+                    <i data-lucide="${r.icon}" class="${r.colorClass} w-12 h-12 group-hover:scale-110 transition-transform"></i>
+                    <h3 class="font-black text-white text-xl">${r.name}</h3>
+                    <p class="text-sm text-slate-400">${r.desc}</p>
+                </button>
+                `;
+            }).join('');
+            
+            lucide.createIcons();
+            setGameState('RELIC_DRAFT');
+        }
+
+        window.selectDraftedRelic = function(relicId) {
+            activeRunRelics.push(relicId);
+            
+            if (relicId === 'BEEF_HEART') { maxHp += 1; hp += 1; }
+            if (relicId === 'SOFT_TIE') { speed += 10; }
+            if (relicId === 'SNAKE_OIL') { hp = Math.min(maxHp, hp + 2); }
+            if (relicId === 'POCKET_WATCH') { speed += 20; }
+            
+            sfx.eat();
+            showTransitionScreen();
+        }
+
+        function showTransitionScreen() {
             stage += 1;
             
+            // Remise à zéro des charges par niveau pour les reliques
+            ironStomachUsedThisStage = false;
+            stoneScaleUsedThisStage = false;
+
             const maxLevels = { MOVING_FOOD: 10, ROCKS: 10, ICE_PATCHES: 10, SPOILED_APPLES: 10, SKELETON_SPAWNER: 10 };
             const availableTypes = Object.keys(MODIFIER_TYPES).filter(key => (activeModifiers[key] || 0) < maxLevels[key]);
             if (availableTypes.length > 0) {
@@ -1249,58 +1338,79 @@
             }
             
             foodEaten = 0;
-            renderShop();
+            
+            const escBox = document.getElementById('transitionEscalation');
+            if (lastModifierEvent) {
+                escBox.classList.remove('hidden');
+                document.getElementById('transitionEscalationText').innerHTML = `${MODIFIER_TYPES[lastModifierEvent.id].name} atteint le <span class="font-bold text-white">Niveau ${lastModifierEvent.level}</span>.<br/>${MODIFIER_TYPES[lastModifierEvent.id].desc}`;
+            } else {
+                escBox.classList.add('hidden');
+            }
+            document.getElementById('transitionSubtitle').innerText = `Niveau ${stage - 1} nettoyé avec succès.`;
+            document.getElementById('btnEnterStage').innerText = `Entrer Niveau ${stage}`;
+
             updateUIPanels();
+            setGameState('TRANSITION');
         }
 
         function handleStartRun() {
             initAudio();
-            const allClassIds = Object.keys(CLASSES);
-            const shuffled = [...allClassIds].sort(() => 0.5 - Math.random());
-            const selected = shuffled.slice(0, 3).map(id => CLASSES[id]);
+            const allRelicIds = Object.keys(CLASS_RELICS);
+            const shuffled = [...allRelicIds].sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 3).map(id => CLASS_RELICS[id]);
             
-            document.getElementById('classSelectGrid').innerHTML = selected.map(cls => {
-                let extras = '';
-                if(cls.ghost) extras += '<span class="text-xs text-purple-400 mt-2 font-semibold block">+ Traverse les rochers</span>';
-                if(cls.goldMult > 1) extras += `<span class="text-xs text-amber-400 mt-2 font-semibold block">+ x${cls.goldMult} Or Obtenu</span>`;
-                if(cls.id === 'MERCHANT') extras += '<span class="text-xs text-amber-500 mt-2 font-semibold block">+ 20% Réduction Boutique</span>';
-                if(cls.growthPerFood > 1) extras += `<span class="text-xs text-red-400 mt-1 font-semibold block">- Grandit +${cls.growthPerFood} par nourriture</span>`;
+            document.getElementById('classSelectGrid').innerHTML = selected.map(relic => {
+                let statsHtml = '';
+                if(relic.hpMod !== 0) statsHtml += `<span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded ${relic.hpMod > 0 ? 'text-green-400' : 'text-red-400'}"><i data-lucide="heart" class="w-3 h-3"></i> ${relic.hpMod > 0 ? '+' : ''}${relic.hpMod} PV Max</span>`;
+                if(relic.speedMod !== 0) statsHtml += `<span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded text-blue-400"><i data-lucide="zap" class="w-3 h-3"></i> ${relic.speedMod}ms Vitesse</span>`;
+                if(relic.growthMod > 0) statsHtml += `<span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded text-red-400"><i data-lucide="arrow-up" class="w-3 h-3"></i> +${relic.growthMod} Croissance</span>`;
+                if(relic.ghost) statsHtml += `<span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded text-purple-400"><i data-lucide="ghost" class="w-3 h-3"></i> Passe-Murailles</span>`;
+                if(relic.id === 'HYDRA') statsHtml += `<span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded text-pink-400"><i data-lucide="dna" class="w-3 h-3"></i> Duplication</span>`;
                 
                 return `
-                <button onclick="startGameWithClass('${cls.id}')" class="flex flex-col text-left p-4 rounded-xl border border-slate-700 bg-slate-800 hover:border-green-500 hover:bg-slate-800/80 transition-all group">
-                    <div class="flex justify-between items-center mb-1 w-full">
+                <button onclick="startGameWithClass('${relic.id}')" class="flex flex-col text-left p-4 rounded-xl border border-slate-700 bg-slate-800 hover:border-green-500 hover:bg-slate-800/80 transition-all group">
+                    <div class="flex justify-between items-center mb-2 w-full">
                         <span class="font-bold text-xl text-white group-hover:text-green-400 flex items-center gap-2">
-                            <i data-lucide="${cls.icon}" class="${cls.iconColor} w-5 h-5"></i> ${cls.name}
+                            <i data-lucide="${relic.icon}" class="${relic.iconColor} w-5 h-5"></i> ${relic.name}
                         </span>
-                        <div class="flex gap-2 text-xs font-bold">
-                            <span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded text-red-400"><i data-lucide="heart" class="w-3 h-3"></i> ${cls.baseHp}</span>
-                            <span class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded text-slate-300"><i data-lucide="zap" class="w-3 h-3"></i> ${cls.baseSpeed}ms</span>
-                        </div>
                     </div>
-                    <p class="text-sm text-slate-400">${cls.desc}</p>
-                    ${extras}
+                    <p class="text-sm text-slate-400 mb-3">${relic.desc}</p>
+                    <div class="flex flex-wrap gap-2 text-xs font-bold">
+                        ${statsHtml}
+                    </div>
                 </button>`;
             }).join('');
             
             setGameState('CLASS_SELECT');
         }
 
-        window.startGameWithClass = function(clsId) {
-            playerClass = CLASSES[clsId];
-            hp = maxHp = playerClass.baseHp;
-            gold = playerClass.id === 'MERCHANT' ? 50 : 0;
-            foodValue = 1; speed = playerClass.baseSpeed; stage = 1; foodEaten = 0;
+        window.startGameWithClass = function(relicId) {
+            playerRelic = CLASS_RELICS[relicId];
             
-            // Appliquer individuellement les modificateurs forcés
             activeModifiers = {};
             for (const mod in forcedMaxMods) {
-                if (forcedMaxMods[mod]) {
-                    activeModifiers[mod] = 10;
-                }
+                if (forcedMaxMods[mod]) activeModifiers[mod] = 10;
             }
-            lastModifierEvent = null;
+
+            activeRunRelics = [];
+            for (const rel in forcedRunRelics) {
+                if (forcedRunRelics[rel]) activeRunRelics.push(rel);
+            }
+
+            let newMaxHp = 2 + playerRelic.hpMod;
+            let newSpeed = 100 + playerRelic.speedMod;
+
+            if (activeRunRelics.includes('BEEF_HEART')) newMaxHp += 1;
+            if (activeRunRelics.includes('SOFT_TIE')) newSpeed += 10;
+
+            maxHp = newMaxHp; hp = newMaxHp; 
+            speed = newSpeed; stage = 1; foodEaten = 0;
             
-            potionPurchases = 0; heartPurchases = 0; applePurchases = 0;
+            // Réinitialisation des compteurs de reliques
+            ironStomachUsedThisStage = false;
+            stoneScaleUsedThisStage = false;
+            bonePactStacks = 0;
+            lastModifierEvent = null;
             
             rocks = []; ice = []; spoiledFoods = []; bigSpoiledFood = null;
             spawners = []; enemies = [];
@@ -1311,7 +1421,7 @@
             startNextStage();
         }
 
-        function startNextStage() {
+        window.startNextStage = function() {
             resetSnakePosition();
             setGameState('PLAYING');
             showPauseOverlay('START');
@@ -1329,9 +1439,7 @@
             document.querySelectorAll('[id^="screen-"]').forEach(el => el.classList.add('hidden'));
             
             const targetScreen = document.getElementById(`screen-${newState}`);
-            if (targetScreen) {
-                targetScreen.classList.remove('hidden');
-            }
+            if (targetScreen) targetScreen.classList.remove('hidden');
             
             document.getElementById('pauseOverlay').classList.add('hidden');
             isWaitingForInput = false;
@@ -1355,16 +1463,13 @@
             document.getElementById('uiStage').innerText = stage;
             document.getElementById('uiHp').innerText = hp;
             document.getElementById('uiMaxHp').innerText = maxHp;
-            document.getElementById('uiGold').innerText = gold;
             document.getElementById('uiFood').innerText = foodEaten;
             document.getElementById('uiFoodReq').innerText = FOOD_TO_ADVANCE();
             document.getElementById('uiProgressBar').style.width = `${(foodEaten / FOOD_TO_ADVANCE()) * 100}%`;
 
             const cvs = document.getElementById('gameCanvas');
             cvs.style.border = '4px dashed #475569';
-            if (playerClass.ghost) {
-                cvs.style.borderColor = 'rgba(168, 85, 247, 0.8)';
-            }
+            if (playerRelic.ghost) cvs.style.borderColor = 'rgba(168, 85, 247, 0.8)';
 
             const modsContainer = document.getElementById('uiModsContainer');
             if (Object.keys(activeModifiers).length > 0) {
@@ -1380,83 +1485,60 @@
                         <span class="font-bold text-slate-200 text-sm">${m.name}</span>
                     </div>`;
                 }).join('');
-            } else {
-                modsContainer.classList.add('hidden');
-            }
+            } else modsContainer.classList.add('hidden');
 
-            document.getElementById('uiClass').innerText = playerClass.name;
-            document.getElementById('uiClass').className = `font-bold ${playerClass.colorClass}`;
-            document.getElementById('uiMult').innerText = `x${foodValue * playerClass.goldMult}`;
+            const runRelicsContainer = document.getElementById('uiRunRelicsContainer');
+            
+            const relicCounts = activeRunRelics.reduce((acc, id) => {
+                acc[id] = (acc[id] || 0) + 1;
+                return acc;
+            }, {});
+
+            if (Object.keys(relicCounts).length > 0) {
+                runRelicsContainer.classList.remove('hidden');
+                document.getElementById('uiRunRelicsList').innerHTML = Object.entries(relicCounts).map(([id, count]) => {
+                    const r = ALL_RELICS[id];
+                    if (!r) return '';
+                    
+                    let extraText = '';
+                    if (id === 'IRON_STOMACH') {
+                        extraText = ironStomachUsedThisStage ? ' <span class="text-red-400 text-[10px]">(Utilisé)</span>' : ' <span class="text-green-400 text-[10px]">(Prêt)</span>';
+                    }
+                    if (id === 'STONE_SCALE') {
+                        extraText = stoneScaleUsedThisStage ? ' <span class="text-red-400 text-[10px]">(Utilisé)</span>' : ' <span class="text-green-400 text-[10px]">(Prêt)</span>';
+                    }
+                    if (id === 'BONE_PACT') {
+                        extraText = ` <span class="text-amber-400 text-[10px]">(${bonePactStacks}/4)</span>`;
+                    }
+
+                    return `
+                    <div class="bg-slate-950 border border-amber-900/30 p-2 rounded-xl flex items-center gap-2 relative">
+                        <i data-lucide="${r.icon}" class="${r.colorClass} w-4 h-4 shrink-0"></i>
+                        <span class="font-bold text-slate-200 text-xs truncate" title="${r.desc}">${r.name}${extraText}</span>
+                        ${count > 1 ? `<span class="absolute -top-1 -right-1 bg-amber-500 text-black text-[10px] font-black px-1 rounded-full">x${count}</span>` : ''}
+                    </div>`;
+                }).join('');
+            } else runRelicsContainer.classList.add('hidden');
+
+            document.getElementById('uiClass').innerText = playerRelic.name;
+            document.getElementById('uiClass').className = `font-bold ${playerRelic.colorClass}`;
             document.getElementById('uiSpeed').innerText = `${speed}ms`;
             
             const uiGrowth = document.getElementById('uiGrowth');
-            uiGrowth.innerText = `+${playerClass.growthPerFood}`;
-            if (playerClass.growthPerFood > 1) {
-                uiGrowth.className = 'font-bold px-2 py-1 rounded text-red-400 bg-red-400/10';
-            } else {
-                uiGrowth.className = 'font-bold px-2 py-1 rounded text-slate-300 bg-slate-800';
-            }
-            lucide.createIcons();
-        }
-
-        function renderShop() {
-            const escBox = document.getElementById('shopEscalation');
-            if (lastModifierEvent) {
-                escBox.classList.remove('hidden');
-                document.getElementById('shopEscalationText').innerHTML = `${MODIFIER_TYPES[lastModifierEvent.id].name} atteint le <span class="font-bold text-white">Niveau ${lastModifierEvent.level}</span>.<br/>${MODIFIER_TYPES[lastModifierEvent.id].desc}`;
-            } else {
-                escBox.classList.add('hidden');
-            }
-            document.getElementById('shopSubtitle').innerText = `Niveau ${stage - 1} Terminé ! Préparez-vous pour le suivant.`;
-            document.getElementById('btnEnterStage').innerText = `Entrer Niveau ${stage}`;
-
-            const potionCostBase = 10 * Math.pow(2, potionPurchases);
-            const heartCostBase = 50 * Math.pow(2, heartPurchases);
-            const appleCostBase = 30 * Math.pow(2, applePurchases);
-
-            const items = [
-                { icon: 'heart', title: 'Potion de Santé', desc: 'Restaure 1 PV instantanément', baseCost: potionCostBase, cond: hp < maxHp },
-                { icon: 'shield', title: 'Réceptacle de Cœur', desc: 'PV Max +1 & Restaure 1 PV', baseCost: heartCostBase, cond: true },
-                { icon: 'coins', title: 'Pommes Dorées', desc: 'La nourriture rapporte plus d\'or', baseCost: appleCostBase, cond: true },
-                { icon: 'zap', title: 'Dilatation Temporelle', desc: 'Ralentit légèrement le serpent', baseCost: 60, cond: speed < 180 }
-            ];
-
-            document.getElementById('shopItemsGrid').innerHTML = items.map((item, idx) => {
-                const cost = getShopCost(item.baseCost);
-                const canBuy = gold >= cost && item.cond;
-                const borderClass = canBuy ? 'border-amber-500/50 bg-slate-800 hover:border-amber-400' : 'border-slate-700 bg-slate-800/50 opacity-60';
-                const btnClass = canBuy ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30' : 'bg-slate-700 text-slate-500 cursor-not-allowed';
-                const merchTag = playerClass.id === 'MERCHANT' ? '<span class="text-xs text-green-400 ml-1">(-20%)</span>' : '';
-                
-                return `
-                <div class="p-4 rounded-xl border transition-all flex flex-col gap-2 ${borderClass}">
-                    <div class="flex items-center gap-2 font-bold text-lg text-white"><i data-lucide="${item.icon}" class="w-5 h-5"></i> ${item.title}</div>
-                    <p class="text-sm text-slate-400 flex-1">${item.desc}</p>
-                    <button onclick="buyShopItem(${idx}, ${cost})" ${!canBuy ? 'disabled' : ''} class="py-2 rounded-lg font-bold mt-2 flex items-center justify-center gap-2 transition-colors ${btnClass}">
-                        <i data-lucide="coins" class="w-4 h-4"></i> ${cost} ${merchTag}
-                    </button>
-                </div>`;
-            }).join('');
-            lucide.createIcons();
-        }
-
-        window.buyShopItem = function(idx, cost) {
-            gold -= cost;
-            sfx.shop();
-            if (idx === 0) { hp = Math.min(hp + 1, maxHp); potionPurchases++; }
-            else if (idx === 1) { maxHp++; hp++; heartPurchases++; }
-            else if (idx === 2) { foodValue++; applePurchases++; }
-            else if (idx === 3) { speed = Math.min(speed + 15, 180); }
+            let totalGrowth = 1 + playerRelic.growthMod;
+            if (activeRunRelics.includes('FAST_METABOLISM')) totalGrowth = 1;
+            uiGrowth.innerText = `+${totalGrowth}`;
             
-            updateUIPanels();
-            renderShop(); 
+            if (totalGrowth > 1) uiGrowth.className = 'font-bold px-2 py-1 rounded text-red-400 bg-red-400/10';
+            else uiGrowth.className = 'font-bold px-2 py-1 rounded text-slate-300 bg-slate-800';
+            lucide.createIcons();
         }
 
         // --- 11. ÉCOUTEURS D'ENTRÉE ---
         window.addEventListener('keydown', e => {
             initAudio();
             if (gameState !== 'PLAYING') return;
-            // Ajout du support AZERTY
+            
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'w', 'a', 's', 'd', 'z', 'q'].includes(e.key.toLowerCase())) e.preventDefault();
             
             if (isWaitingForInput) {
@@ -1473,13 +1555,8 @@
                     
                     isWaitingForInput = false;
                     document.getElementById('pauseOverlay').classList.add('hidden');
-                    dir = parsedDir;
-                    lastProcessedDir = parsedDir;
-                    
-                    resetFoodTimers();
-                    
-                    startIntervals();
-                    moveSnake(); 
+                    dir = parsedDir; lastProcessedDir = parsedDir;
+                    resetFoodTimers(); startIntervals(); moveSnake(); 
                 }
                 return;
             }
@@ -1499,16 +1576,10 @@
 
             if (isWaitingForInput) {
                 if (newDir.x === 0 && newDir.y === 1) return;
-
                 isWaitingForInput = false;
                 document.getElementById('pauseOverlay').classList.add('hidden');
-                dir = newDir;
-                lastProcessedDir = newDir;
-                
-                resetFoodTimers();
-                
-                startIntervals();
-                moveSnake();
+                dir = newDir; lastProcessedDir = newDir;
+                resetFoodTimers(); startIntervals(); moveSnake();
                 return;
             }
 
@@ -1517,7 +1588,6 @@
             if (newDir.x !== 0 && currentDir.x === 0) dir = newDir;
         }
 
-        // Init App
         lucide.createIcons();
         initProfile();
     </script>
