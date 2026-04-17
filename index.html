@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Snaek : The Roguelike</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .animate-pulse-fast { animation: pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
@@ -25,12 +23,10 @@
 
     <div class="max-w-5xl w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <!-- PANNEAU GAUCHE - JEU ET MENUS -->
         <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-4 md:p-8 shadow-2xl flex flex-col items-center justify-center relative overflow-hidden min-h-[500px]">
             
             <canvas id="gameCanvas" width="400" height="400" class="bg-slate-950 rounded-xl shadow-inner w-full max-w-[450px] aspect-square transition-opacity duration-300"></canvas>
 
-            <!-- Contrôles Mobiles -->
             <div id="mobileControls" class="grid grid-cols-3 gap-2 mt-8 lg:hidden w-48 mx-auto opacity-80 hidden">
                 <div></div>
                 <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:0, y:-1})"><i data-lucide="arrow-up"></i></button>
@@ -40,7 +36,6 @@
                 <button class="bg-slate-800 p-4 rounded-xl flex justify-center active:bg-slate-700" onclick="handleDpad({x:1, y:0})"><i data-lucide="arrow-right"></i></button>
             </div>
 
-            <!-- ÉCRAN D'ENREGISTREMENT -->
             <div id="screen-REGISTER" class="absolute inset-0 z-30 flex flex-col items-center justify-center bg-slate-950/95 p-6 text-center hidden backdrop-blur-md">
                 <i data-lucide="user-circle" class="text-green-500 mb-6 w-16 h-16"></i>
                 <h2 class="text-4xl font-black text-white mb-2">IDENTIFIEZ-VOUS</h2>
@@ -49,7 +44,6 @@
                 <button onclick="savePlayerName()" class="px-8 py-4 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white transition-colors w-full max-w-xs shadow-lg">Sauvegarder le Profil</button>
             </div>
 
-            <!-- MENU PRINCIPAL -->
             <div id="screen-MENU" class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/50 backdrop-blur-sm hidden">
                 <button onclick="openSettings()" class="absolute top-4 right-4 text-slate-500 hover:text-white transition-colors p-2 z-20">
                     <i data-lucide="settings" class="w-6 h-6"></i>
@@ -64,7 +58,6 @@
                 </div>
             </div>
 
-            <!-- ÉCRAN OUTILS DEV / PARAMÈTRES -->
             <div id="screen-SETTINGS" class="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/95 backdrop-blur-md p-6 text-center hidden">
                 <div class="bg-slate-900 p-8 rounded-2xl border border-slate-700 w-full max-w-md relative shadow-2xl overflow-y-auto max-h-[90vh]">
                     <button onclick="closeSettings()" class="absolute top-4 right-4 text-slate-500 hover:text-white">
@@ -88,7 +81,6 @@
                         <div>
                             <div class="text-sm font-bold text-amber-400 uppercase tracking-wider mb-3">Forcer Reliques (Test)</div>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <!-- Communes -->
                                 <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-amber-500 transition-colors text-sm">
                                     <input type="checkbox" onchange="toggleSpecificRelic('BEEF_HEART', this.checked)" class="w-4 h-4 accent-amber-500"> Cœur de Bœuf
                                 </label>
@@ -98,14 +90,12 @@
                                 <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-amber-500 transition-colors text-sm">
                                     <input type="checkbox" onchange="toggleSpecificRelic('EARTHWORM', this.checked)" class="w-4 h-4 accent-amber-500"> Ver de terre
                                 </label>
-                                <!-- Inhabituelles -->
                                 <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-cyan-400 transition-colors text-sm">
                                     <input type="checkbox" onchange="toggleSpecificRelic('SPIKED_BOOTS', this.checked)" class="w-4 h-4 accent-cyan-400"> B. Crampons
                                 </label>
                                 <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-cyan-400 transition-colors text-sm">
                                     <input type="checkbox" onchange="toggleSpecificRelic('FAST_METABOLISM', this.checked)" class="w-4 h-4 accent-cyan-400"> Méta. Rapide
                                 </label>
-                                <!-- Rares -->
                                 <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-yellow-400 transition-colors text-sm">
                                     <input type="checkbox" onchange="toggleSpecificRelic('IRON_STOMACH', this.checked)" class="w-4 h-4 accent-yellow-400"> Esto. de Fer
                                 </label>
@@ -125,7 +115,7 @@
                                     <input type="checkbox" onchange="toggleSpecificMod('ROCKS', this.checked)" class="w-4 h-4 accent-purple-500"> Rochers
                                 </label>
                                 <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors text-sm">
-                                    <input type="checkbox" onchange="toggleSpecificMod('SPOILED_APPLES', this.checked)" class="w-4 h-4 accent-purple-500"> Pommes P.
+                                    <input type="checkbox" onchange="toggleSpecificMod('SPOILED_APPLES', this.checked)" class="w-4 h-4 accent-purple-500"> Carottes P.
                                 </label>
                                 <label class="flex items-center gap-3 text-white font-bold cursor-pointer bg-slate-800 p-3 rounded-xl border border-slate-700 hover:border-purple-500 transition-colors text-sm">
                                     <input type="checkbox" onchange="toggleSpecificMod('MOVING_FOOD', this.checked)" class="w-4 h-4 accent-purple-500"> Nourriture M.
@@ -142,7 +132,6 @@
                 </div>
             </div>
 
-            <!-- ÉCRAN CLASSEMENT -->
             <div id="screen-LEADERBOARD" class="absolute inset-0 z-20 flex flex-col items-center bg-slate-900/95 p-6 overflow-hidden hidden">
                 <h2 class="text-3xl font-black text-amber-400 mb-4 flex items-center gap-2"><i data-lucide="trophy"></i> PANTHÉON</h2>
                 
@@ -164,14 +153,12 @@
                 <button onclick="toggleLeaderboard()" class="mt-6 text-slate-400 hover:text-white transition-colors font-bold flex items-center gap-2"><i data-lucide="arrow-left" class="w-4 h-4"></i> Retour au Menu</button>
             </div>
 
-            <!-- ÉCRAN SÉLECTION RELIQUE DE DÉPART -->
             <div id="screen-CLASS_SELECT" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col p-6 overflow-y-auto items-center hidden">
                 <h2 class="text-3xl font-black text-white mb-6 mt-4 text-center">CHOISISSEZ VOTRE ORIGINE</h2>
                 <div id="classSelectGrid" class="flex flex-col gap-4 w-full max-w-md"></div>
                 <button onclick="quitToMenu()" class="mt-6 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold px-4 py-2"><i data-lucide="arrow-left" class="w-5 h-5"></i> Retour au Menu</button>
             </div>
 
-            <!-- ÉCRAN DRAFT DE RELIQUE -->
             <div id="screen-RELIC_DRAFT" class="absolute inset-0 bg-slate-900/95 z-20 flex flex-col p-6 overflow-y-auto items-center justify-center hidden">
                 <div class="text-center mb-8 animate-pulse-fast">
                     <i data-lucide="sparkles" class="text-amber-400 w-12 h-12 mx-auto mb-2"></i>
@@ -180,11 +167,9 @@
                 </div>
                 
                 <div id="draftRelicsGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl">
-                    <!-- Généré en JS -->
-                </div>
+                    </div>
             </div>
 
-            <!-- ÉCRAN TRANSITION NIVEAU -->
             <div id="screen-TRANSITION" class="absolute inset-0 bg-slate-900/95 z-10 flex flex-col items-center justify-center p-6 md:p-10 overflow-y-auto hidden text-center">
                 <h2 class="text-4xl font-black text-emerald-400 mb-6 flex items-center justify-center gap-3">
                     <i data-lucide="check-circle-2" class="w-10 h-10"></i> PRÊT POUR LA SUITE
@@ -205,7 +190,6 @@
                 </div>
             </div>
 
-            <!-- ÉCRAN PAUSE/DÉPART -->
             <div id="pauseOverlay" class="absolute inset-0 z-10 flex flex-col items-center justify-end pb-12 text-center hidden pointer-events-none">
                 <div id="pauseOverlayBox" class="bg-slate-900/90 border border-emerald-500/50 p-5 rounded-2xl shadow-[0_0_30px_rgba(16,185,129,0.2)] backdrop-blur-sm pointer-events-auto mb-4 transition-colors">
                     <h2 id="pauseTitle" class="text-2xl font-black text-emerald-400 mb-1">NIVEAU 1</h2>
@@ -214,7 +198,6 @@
                 </div>
             </div>
 
-            <!-- ÉCRAN FIN DE PARTIE -->
             <div id="screen-GAMEOVER" class="absolute inset-0 bg-slate-950/90 z-20 flex flex-col items-center justify-center p-6 text-center hidden">
                 <i data-lucide="skull" class="text-red-500 mb-6 animate-pulse-fast w-16 h-16"></i>
                 <h2 class="text-5xl font-black text-white mb-2">PARTIE TERMINÉE</h2>
@@ -227,7 +210,6 @@
             </div>
         </div>
 
-        <!-- PANNEAU DROIT - STATUT UI -->
         <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-6 overflow-y-auto max-h-[85vh]">
             <div>
                 <h3 class="text-slate-500 font-bold mb-3 uppercase tracking-widest text-xs flex items-center gap-2">Statut de la Partie</h3>
@@ -278,12 +260,11 @@
         </div>
     </div>
 
-    <!-- MODULES FIREBASE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getDatabase, ref, push, query, orderByChild, limitToLast, get } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js";
 
-       const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyC76d3JvCvvjmKBmgsgJGWOb5ia5Uuk5s8",
             authDomain: "snaek-roguelikte.firebaseapp.com",
             projectId: "snaek-roguelikte",
@@ -345,24 +326,26 @@
     </script>
 
     <script>
-        // === SYSTÈME DE PRÉCHARGEMENT DES ASSETS (MÉTHODE 3) ===
+        // === SYSTÈME DE PRÉCHARGEMENT DES ASSETS ===
         const ASSETS = {};
         
-        // C'est ici que vous définissez le chemin vers vos images sur GitHub
+        const GITHUB_RAW_URL = ""; 
+        const BASE_PATH = GITHUB_RAW_URL ? GITHUB_RAW_URL : "./";
+
         const IMAGES_TO_LOAD = {
-            apple: 'assets/apple.png',
-            banana: 'assets/banana.png',
-            melon: 'assets/melon.png',
-            spoiled_apple: 'assets/poisonapple.png', // Changé ici !
-            big_spoiled_apple: 'assets/big_spoiled_apple.png',
-            rock: 'assets/rock.png',
-            ice: 'assets/ice.png',
-            spawner: 'assets/spawner.png',
-            skeleton: 'assets/skeleton.png',
-            snake_head: 'assets/snake_head.png',
-            snake_body: 'assets/snake_body.png',
-            snake_head_ghost: 'assets/snake_head_ghost.png',
-            snake_body_ghost: 'assets/snake_body_ghost.png'
+            carrot: BASE_PATH + 'assets/carrot.png',
+            beet: BASE_PATH + 'assets/beet.png',
+            garlic: BASE_PATH + 'assets/garlic.png',
+            spoiled_carrot: BASE_PATH + 'assets/rottencarrot.png',
+            big_spoiled_carrot: BASE_PATH + 'assets/big_spoiled_carrot.png',
+            rock: BASE_PATH + 'assets/rock.png',
+            ice: BASE_PATH + 'assets/ice.png',
+            spawner: BASE_PATH + 'assets/spawner.png',
+            skeleton: BASE_PATH + 'assets/skeleton.png',
+            snake_head: BASE_PATH + 'assets/snake_head.png',
+            snake_body: BASE_PATH + 'assets/snake_body.png',
+            snake_head_ghost: BASE_PATH + 'assets/snake_head_ghost.png',
+            snake_body_ghost: BASE_PATH + 'assets/snake_body_ghost.png'
         };
 
         let assetsLoaded = false;
@@ -389,8 +372,8 @@
                     }
                 };
                 
-                // Fallback silencieux si l'image n'existe pas encore sur le GitHub
                 img.onerror = () => {
+                    console.warn(`Asset introuvable : ${img.src}. Chargement de la forme de secours.`);
                     ASSETS[key] = null; 
                     loadedCount++;
                     if (loadedCount === totalCount) {
@@ -550,7 +533,7 @@
         const COMMON_RELICS = {
             BEEF_HEART: { id: 'BEEF_HEART', name: 'Cœur de Bœuf', desc: '+1 PV Max et soigne 1 PV.', icon: 'heart', colorClass: 'text-red-500' },
             SOFT_TIE: { id: 'SOFT_TIE', name: 'Tié Mou', desc: 'Vitesse de déplacement ralentie de 10ms.', icon: 'hourglass', colorClass: 'text-amber-600' },
-            EARTHWORM: { id: 'EARTHWORM', name: 'Ver de Terre', desc: 'Pommes +1 progression, autres nourritures limitées à 1.', icon: 'bug', colorClass: 'text-emerald-500' },
+            EARTHWORM: { id: 'EARTHWORM', name: 'Ver de Terre', desc: 'Carottes +1 progression, autres nourritures limitées à 1.', icon: 'bug', colorClass: 'text-emerald-500' },
             SNAKE_OIL: { id: 'SNAKE_OIL', name: 'Huile de Serpent', desc: 'Soigne instantanément 2 PV.', icon: 'droplet', colorClass: 'text-blue-400' },
             POCKET_WATCH: { id: 'POCKET_WATCH', name: 'Montre à Gousset', desc: 'Vitesse fortement ralentie (-20ms).', icon: 'clock', colorClass: 'text-zinc-300' }
         };
@@ -561,7 +544,7 @@
         };
 
         const RARE_RELICS = {
-            IRON_STOMACH: { id: 'IRON_STOMACH', name: 'Estomac de Fer', desc: 'Mangez 1 Pomme Pourrie par niveau pour gagner de la Progression.', icon: 'shield-alert', colorClass: 'text-emerald-300' },
+            IRON_STOMACH: { id: 'IRON_STOMACH', name: 'Estomac de Fer', desc: 'Mangez 1 Carotte Pourrie par niveau pour gagner de la Progression.', icon: 'shield-alert', colorClass: 'text-emerald-300' },
             BONE_PACT: { id: 'BONE_PACT', name: 'Pacte d\'Ossements', desc: 'Manger des squelettes augmente vos PV (2) puis soigne (4).', icon: 'skull', colorClass: 'text-zinc-100' },
             STONE_SCALE: { id: 'STONE_SCALE', name: 'Écaille de Pierre', desc: 'Le 1er impact sur un rocher crée une explosion protectrice.', icon: 'hexagon', colorClass: 'text-stone-400' }
         };
@@ -570,7 +553,7 @@
 
         const MODIFIER_TYPES = {
             ROCKS: { id: 'ROCKS', name: 'Terrain Statique', desc: 'Des rochers indestructibles apparaissent. (Max Niv.10)', icon: 'mountain', color: 'text-slate-400' },
-            SPOILED_APPLES: { id: 'SPOILED_APPLES', name: 'Pommes Pourries', desc: 'Nourriture empoisonnée. À éviter ! (Max Niv.10)', icon: 'biohazard', color: 'text-lime-400' },
+            SPOILED_APPLES: { id: 'SPOILED_APPLES', name: 'Carottes Pourries', desc: 'Nourriture empoisonnée. À éviter ! (Max Niv.10)', icon: 'biohazard', color: 'text-lime-400' },
             MOVING_FOOD: { id: 'MOVING_FOOD', name: 'Nourriture Mobile', desc: 'La nourriture normale saute périodiquement ! (Max Niv.10)', icon: 'rabbit', color: 'text-pink-400' },
             ICE_PATCHES: { id: 'ICE_PATCHES', name: 'Plaques de Glace', desc: 'Le serpent glisse ! Impossible de tourner. (Max Niv.10)', icon: 'snowflake', color: 'text-cyan-300' },
             SKELETON_SPAWNER: { id: 'SKELETON_SPAWNER', name: 'Nécromancien', desc: 'Des Squelettes harcèlent vos flancs ! (Max Niv.10)', icon: 'skull', color: 'text-zinc-400' }
@@ -592,7 +575,7 @@
         let snake = [...INITIAL_SNAKE];
         let dir = {...INITIAL_DIR};
         let lastProcessedDir = {...INITIAL_DIR};
-        let foods = [{ x: 5, y: 5, type: 'APPLE' }];
+        let foods = [{ x: 5, y: 5, type: 'CARROT' }];
         let rocks = [], ice = [], spoiledFoods = [];
         let spawners = [], enemies = [];
         let skeletonsSpawnedThisStage = 0;
@@ -672,9 +655,9 @@
 
         function getRandomFoodType() {
             const rand = Math.random();
-            if (rand < 0.60) return 'APPLE';
-            if (rand < 0.90) return 'BANANA';
-            return 'MELON';
+            if (rand < 0.60) return 'CARROT';
+            if (rand < 0.90) return 'BEET';
+            return 'GARLIC';
         }
 
         // --- 6. LOGIQUE DE GÉNÉRATION ---
@@ -796,7 +779,7 @@
             growthQueue = 0;
             generateEnvironment();
             const initialSpot = getEmptySpot(true, true, true, true, spawners, 4);
-            foods = [{ ...initialSpot, type: 'APPLE', nextMoveTime: Date.now() + getFoodMoveDelay() }];
+            foods = [{ ...initialSpot, type: 'CARROT', nextMoveTime: Date.now() + getFoodMoveDelay() }];
             spawnSpoiledApples();
         }
 
@@ -901,7 +884,7 @@
                             if (rocks.some(r => r.x === spot.x && r.y === spot.y)) return false;
                             if (spawners.some(s => s.x === spot.x && s.y === spot.y)) return false;
                             if (enemies.some(en => en !== e && en.x === spot.x && en.y === spot.y)) return false;
-                            if (bigSpoiledFood && spot.x >= bigSpoiledFood.x && spot.x <= bigSpoiledFood.x+1 && spot.y >= bigSpoiledFood.y && spot.y <= bigSpoiledFood.y+1) return false;
+                            if (bigSpoiledFood && spot.x >= bigSpoiledFood.x && spot.x <= bigSpoiledFood.x+1 && spot.y >= bigSpoiledFood.y && spot.y+1) return false;
                             return true;
                         });
 
@@ -994,7 +977,6 @@
             if (hitSelf && isInvulnerable) hitSelf = false;
 
             // --- RELIQUE RARE : ÉCAILLE DE PIERRE ---
-            // N'est déclenché que par les rochers, vu que les murs externes wrapent !
             if (hitRockIndex !== -1 && activeRunRelics.includes('STONE_SCALE') && !stoneScaleUsedThisStage) {
                 stoneScaleUsedThisStage = true;
                 
@@ -1093,15 +1075,15 @@
             
             if (eatenFoodIndex !== -1) {
                 const eatenFood = foods[eatenFoodIndex];
-                const foodType = eatenFood.type || 'APPLE';
+                const foodType = eatenFood.type || 'CARROT';
                 
                 let progressGain = 1;
                 let growthGain = 1;
-                if (foodType === 'BANANA') { progressGain = 2; growthGain = 2; }
-                else if (foodType === 'MELON') { progressGain = 3; growthGain = 3; }
+                if (foodType === 'BEET') { progressGain = 2; growthGain = 2; }
+                else if (foodType === 'GARLIC') { progressGain = 3; growthGain = 3; }
 
                 if (activeRunRelics.includes('EARTHWORM')) {
-                    if (foodType === 'APPLE') progressGain = 2; 
+                    if (foodType === 'CARROT') progressGain = 2; 
                     else progressGain = 1; 
                 }
 
@@ -1231,37 +1213,36 @@
 
             ctx.fillStyle = '#84cc16';
             spoiledFoods.forEach(sp => {
-                if (ASSETS.spoiled_apple) {
-                    ctx.drawImage(ASSETS.spoiled_apple, sp.x * CELL_SIZE, sp.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
+                if (ASSETS.spoiled_carrot) {
+                    ctx.drawImage(ASSETS.spoiled_carrot, sp.x * CELL_SIZE, sp.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
                 } else {
-                    ctx.beginPath(); ctx.arc(sp.x * CELL_SIZE + CELL_SIZE/2, sp.y * CELL_SIZE + CELL_SIZE/2, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
-                    ctx.fillStyle = '#14532d'; 
-                    ctx.fillRect(sp.x * CELL_SIZE + CELL_SIZE/2 - 1, sp.y * CELL_SIZE + 2, 2, 4);
-                    ctx.fillStyle = '#84cc16'; 
+                    // Fallback Carotte pourrie
+                    const cx = sp.x * CELL_SIZE + CELL_SIZE / 2;
+                    const cy = sp.y * CELL_SIZE + CELL_SIZE / 2;
+                    ctx.fillStyle = '#65a30d'; // Vert-marron malade
+                    ctx.beginPath(); ctx.moveTo(cx, cy + 8); ctx.lineTo(cx - 5, cy - 4); ctx.lineTo(cx + 5, cy - 4); ctx.fill();
+                    ctx.fillStyle = '#14532d'; ctx.fillRect(cx - 1, cy - 8, 2, 4);
                 }
             });
 
             if (bigSpoiledFood) {
-                if (ASSETS.big_spoiled_apple) {
-                    ctx.drawImage(ASSETS.big_spoiled_apple, bigSpoiledFood.x * CELL_SIZE, bigSpoiledFood.y * CELL_SIZE, CELL_SIZE * 2, CELL_SIZE * 2);
+                if (ASSETS.big_spoiled_carrot) {
+                    ctx.drawImage(ASSETS.big_spoiled_carrot, bigSpoiledFood.x * CELL_SIZE, bigSpoiledFood.y * CELL_SIZE, CELL_SIZE * 2, CELL_SIZE * 2);
                 } else {
-                    ctx.fillStyle = '#84cc16';
-                    ctx.beginPath();
-                    ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE, CELL_SIZE - 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#14532d'; 
-                    ctx.fillRect(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE - 4, bigSpoiledFood.y * CELL_SIZE + 4, 8, 6);
-                    ctx.fillStyle = '#1a2e05';
-                    ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE - 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
-                    ctx.beginPath(); ctx.arc(bigSpoiledFood.x * CELL_SIZE + CELL_SIZE + 6, bigSpoiledFood.y * CELL_SIZE + CELL_SIZE - 2, 4, 0, Math.PI*2); ctx.fill();
+                    // Fallback Grosse Carotte pourrie
+                    const cx = bigSpoiledFood.x * CELL_SIZE + CELL_SIZE;
+                    const cy = bigSpoiledFood.y * CELL_SIZE + CELL_SIZE;
+                    ctx.fillStyle = '#65a30d';
+                    ctx.beginPath(); ctx.moveTo(cx, cy + 16); ctx.lineTo(cx - 12, cy - 8); ctx.lineTo(cx + 12, cy - 8); ctx.fill();
+                    ctx.fillStyle = '#14532d'; ctx.fillRect(cx - 3, cy - 16, 6, 8);
                 }
             }
 
             foods.forEach(f => {
                 let img = null;
-                if (f.type === 'BANANA') img = ASSETS.banana;
-                else if (f.type === 'MELON') img = ASSETS.melon;
-                else img = ASSETS.apple;
+                if (f.type === 'BEET') img = ASSETS.beet;
+                else if (f.type === 'GARLIC') img = ASSETS.garlic;
+                else img = ASSETS.carrot;
 
                 if (img) {
                     ctx.drawImage(img, f.x * CELL_SIZE, f.y * CELL_SIZE, CELL_SIZE, CELL_SIZE);
@@ -1269,19 +1250,19 @@
                     const cx = f.x * CELL_SIZE + CELL_SIZE / 2;
                     const cy = f.y * CELL_SIZE + CELL_SIZE / 2;
                     
-                    if (f.type === 'BANANA') {
-                        ctx.fillStyle = '#facc15';
-                        ctx.beginPath(); ctx.ellipse(cx, cy, CELL_SIZE/2 - 2, CELL_SIZE/4, Math.PI / 4, 0, Math.PI * 2); ctx.fill();
-                    } else if (f.type === 'MELON') {
-                        ctx.fillStyle = '#4ade80';
-                        ctx.beginPath(); ctx.arc(cx, cy, CELL_SIZE/2 - 1, 0, Math.PI * 2); ctx.fill();
-                        ctx.fillStyle = '#166534'; 
-                        ctx.fillRect(cx - 3, cy - 6, 2, 12); ctx.fillRect(cx + 1, cy - 6, 2, 12);
-                    } else {
-                        ctx.fillStyle = '#ef4444'; 
-                        ctx.beginPath(); ctx.arc(cx, cy, CELL_SIZE/2 - 2, 0, Math.PI * 2); ctx.fill();
-                        ctx.fillStyle = '#14532d'; 
-                        ctx.fillRect(f.x * CELL_SIZE + CELL_SIZE/2 - 1, f.y * CELL_SIZE + 2, 2, 4);
+                    if (f.type === 'BEET') {
+                        ctx.fillStyle = '#be123c'; // Violet betterave
+                        ctx.beginPath(); ctx.arc(cx, cy + 2, CELL_SIZE/2 - 3, 0, Math.PI * 2); ctx.fill();
+                        ctx.fillStyle = '#15803d'; ctx.fillRect(cx - 1, cy - 8, 2, 6);
+                    } else if (f.type === 'GARLIC') {
+                        ctx.fillStyle = '#f8fafc'; // Blanc ail
+                        ctx.beginPath(); ctx.arc(cx - 2, cy + 2, 4, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.arc(cx + 2, cy + 2, 4, 0, Math.PI * 2); ctx.fill();
+                        ctx.beginPath(); ctx.moveTo(cx, cy - 6); ctx.lineTo(cx - 5, cy + 2); ctx.lineTo(cx + 5, cy + 2); ctx.fill();
+                    } else { // CARROT
+                        ctx.fillStyle = '#f97316'; // Orange carotte
+                        ctx.beginPath(); ctx.moveTo(cx, cy + 8); ctx.lineTo(cx - 5, cy - 4); ctx.lineTo(cx + 5, cy - 4); ctx.fill();
+                        ctx.fillStyle = '#15803d'; ctx.fillRect(cx - 1, cy - 8, 2, 4);
                     }
                 }
             });
@@ -1397,7 +1378,6 @@
             
             document.getElementById('draftRelicsGrid').innerHTML = offeredRelics.map(id => {
                 const r = ALL_RELICS[id];
-                // Ajout visuel en fonction de la rareté
                 let borderCol = "border-slate-700";
                 if (RARE_RELICS[id]) borderCol = "border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.2)]";
                 else if (UNCOMMON_RELICS[id]) borderCol = "border-cyan-500/50";
@@ -1430,7 +1410,6 @@
         function showTransitionScreen() {
             stage += 1;
             
-            // Remise à zéro des charges par niveau pour les reliques
             ironStomachUsedThisStage = false;
             stoneScaleUsedThisStage = false;
 
@@ -1513,7 +1492,6 @@
             maxHp = newMaxHp; hp = newMaxHp; 
             speed = newSpeed; stage = 1; foodEaten = 0;
             
-            // Réinitialisation des compteurs de reliques
             ironStomachUsedThisStage = false;
             stoneScaleUsedThisStage = false;
             bonePactStacks = 0;
@@ -1522,7 +1500,7 @@
             rocks = []; ice = []; spoiledFoods = []; bigSpoiledFood = null;
             spawners = []; enemies = [];
             snake = [...INITIAL_SNAKE]; dir = {...INITIAL_DIR}; lastProcessedDir = {...INITIAL_DIR}; growthQueue = 0;
-            foods = [{x: 5, y: 5, type: 'APPLE'}];
+            foods = [{x: 5, y: 5, type: 'CARROT'}];
             
             setGameState('PLAYING');
             startNextStage();
